@@ -178,8 +178,8 @@ FGAPI void    FGAPIENTRY glutWireRhombicDodecahedron( void );
 FGAPI void    FGAPIENTRY glutSolidRhombicDodecahedron( void );
 FGAPI void    FGAPIENTRY glutWireSierpinskiSponge ( int num_levels, double offset[3], double scale );
 FGAPI void    FGAPIENTRY glutSolidSierpinskiSponge ( int num_levels, double offset[3], double scale );
-FGAPI void    FGAPIENTRY glutWireCylinder( double radius, double height, GLint slices, GLint stacks);
-FGAPI void    FGAPIENTRY glutSolidCylinder( double radius, double height, GLint slices, GLint stacks);
+FGAPI void    FGAPIENTRY glutWireCylinder( double radius, double m_height, GLint slices, GLint stacks);
+FGAPI void    FGAPIENTRY glutSolidCylinder( double radius, double m_height, GLint slices, GLint stacks);
 
 /*
  * Rest of functions for rendering Newell's teaset, found in fg_teapot.c

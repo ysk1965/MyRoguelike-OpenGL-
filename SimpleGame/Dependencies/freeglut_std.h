@@ -398,7 +398,7 @@
  */
 FGAPI void    FGAPIENTRY glutInit( int* pargc, char** argv );
 FGAPI void    FGAPIENTRY glutInitWindowPosition( int x, int y );
-FGAPI void    FGAPIENTRY glutInitWindowSize( int width, int height );
+FGAPI void    FGAPIENTRY glutInitWindowSize( int m_width, int m_height );
 FGAPI void    FGAPIENTRY glutInitDisplayMode( unsigned int displayMode );
 FGAPI void    FGAPIENTRY glutInitDisplayString( const char* displayMode );
 
@@ -411,13 +411,13 @@ FGAPI void    FGAPIENTRY glutMainLoop( void );
  * Window management functions, see fg_window.c
  */
 FGAPI int     FGAPIENTRY glutCreateWindow( const char* title );
-FGAPI int     FGAPIENTRY glutCreateSubWindow( int window, int x, int y, int width, int height );
+FGAPI int     FGAPIENTRY glutCreateSubWindow( int window, int x, int y, int m_width, int m_height );
 FGAPI void    FGAPIENTRY glutDestroyWindow( int window );
 FGAPI void    FGAPIENTRY glutSetWindow( int window );
 FGAPI int     FGAPIENTRY glutGetWindow( void );
 FGAPI void    FGAPIENTRY glutSetWindowTitle( const char* title );
 FGAPI void    FGAPIENTRY glutSetIconTitle( const char* title );
-FGAPI void    FGAPIENTRY glutReshapeWindow( int width, int height );
+FGAPI void    FGAPIENTRY glutReshapeWindow( int m_width, int m_height );
 FGAPI void    FGAPIENTRY glutPositionWindow( int x, int y );
 FGAPI void    FGAPIENTRY glutShowWindow( void );
 FGAPI void    FGAPIENTRY glutHideWindow( void );
@@ -528,8 +528,8 @@ FGAPI void    FGAPIENTRY glutWireCube( double size );
 FGAPI void    FGAPIENTRY glutSolidCube( double size );
 FGAPI void    FGAPIENTRY glutWireSphere( double radius, GLint slices, GLint stacks );
 FGAPI void    FGAPIENTRY glutSolidSphere( double radius, GLint slices, GLint stacks );
-FGAPI void    FGAPIENTRY glutWireCone( double base, double height, GLint slices, GLint stacks );
-FGAPI void    FGAPIENTRY glutSolidCone( double base, double height, GLint slices, GLint stacks );
+FGAPI void    FGAPIENTRY glutWireCone( double base, double m_height, GLint slices, GLint stacks );
+FGAPI void    FGAPIENTRY glutSolidCone( double base, double m_height, GLint slices, GLint stacks );
 FGAPI void    FGAPIENTRY glutWireTorus( double innerRadius, double outerRadius, GLint sides, GLint rings );
 FGAPI void    FGAPIENTRY glutSolidTorus( double innerRadius, double outerRadius, GLint sides, GLint rings );
 FGAPI void    FGAPIENTRY glutWireDodecahedron( void );
@@ -562,8 +562,8 @@ FGAPI int     FGAPIENTRY glutGameModeGet( GLenum query );
 FGAPI int     FGAPIENTRY glutVideoResizeGet( GLenum query );
 FGAPI void    FGAPIENTRY glutSetupVideoResizing( void );
 FGAPI void    FGAPIENTRY glutStopVideoResizing( void );
-FGAPI void    FGAPIENTRY glutVideoResize( int x, int y, int width, int height );
-FGAPI void    FGAPIENTRY glutVideoPan( int x, int y, int width, int height );
+FGAPI void    FGAPIENTRY glutVideoResize( int x, int y, int m_width, int m_height );
+FGAPI void    FGAPIENTRY glutVideoPan( int x, int y, int m_width, int m_height );
 
 /*
  * Colormap functions, see fg_misc.c

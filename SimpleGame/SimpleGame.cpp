@@ -22,10 +22,11 @@ but WITHOUT ANY WARRANTY.
 ScnMgr *scn = NULL;
 DWORD prevTime = 0;
 
-bool keyW = 0;
-bool keyA = 0;
-bool keyS = 0;
-bool keyD = 0;
+bool keyW = false;
+bool keyA = false;
+bool keyS = false;
+bool keyD = false;
+bool keySP = false;
 int shoot = SHOOT_NONE;
 
 void RenderScene(void)
@@ -39,7 +40,7 @@ void RenderScene(void)
 	prevTime = currTime;
 	float eTime = (float)elapseTime / 1000.f;
 	
-	float fx = 0.f, fy = 0.f;
+	float fx = 0.f, fy = 0.f, fz = 0.f;
 	if (keyW)
 		fy += FORCE;
 	if (keyA)
@@ -48,7 +49,9 @@ void RenderScene(void)
 		fy -= FORCE;
 	if (keyD)
 		fx += FORCE;
-	scn->ApplyForce(fx, fy, eTime);
+	if (keySP)
+		fz += FORCE / 2;
+	scn->ApplyForce(fx, fy, fz, eTime);
 
 	scn->Update(eTime);
 	scn->RenderScene();
@@ -69,16 +72,16 @@ void MouseInput(int button, int state, int x, int y)
 void KeyDownInput(unsigned char key, int x, int y)
 {
 	if (key == 'w' || key == 'W')
-		keyW = 1;
-
+		keyW = true;
 	if (key == 'a' || key == 'A')
-		keyA = 1;
-	
+		keyA = true;
 	if (key == 's' || key == 'S')
-		keyS = 1;
-	
+		keyS = true;
 	if (key == 'd' || key == 'D')
-		keyD = 1;
+		keyD = true;
+	if (key == ' ') 
+		keySP = true;
+	
 
 	RenderScene();
 }
@@ -86,17 +89,16 @@ void KeyDownInput(unsigned char key, int x, int y)
 void KeyUpInput(unsigned char key, int x, int y)
 {
 	if (key == 'w' || key == 'W')
-		keyW = 0;
-
+		keyW = false;
 	if (key == 'a' || key == 'A')
-		keyA = 0;
-
+		keyA = false;
 	if (key == 's' || key == 'S')
-		keyS = 0;
-
+		keyS = false;
 	if (key == 'd' || key == 'D')
-		keyD = 0;
-
+		keyD = false;
+	if (key == ' ') 
+		keySP = false;
+	
 	RenderScene();
 }
 

@@ -733,16 +733,16 @@ static BPMNode* bpmnode_create(BPMLists* lists, int weight, unsigned index, BPMN
 static void bpmnode_sort(BPMNode* leaves, size_t num)
 {
 	BPMNode* mem = (BPMNode*)lodepng_malloc(sizeof(*leaves) * num);
-	size_t width, counter = 0;
-	for (width = 1; width < num; width *= 2)
+	size_t m_width, counter = 0;
+	for (m_width = 1; m_width < num; m_width *= 2)
 	{
 		BPMNode* a = (counter & 1) ? mem : leaves;
 		BPMNode* b = (counter & 1) ? leaves : mem;
 		size_t p;
-		for (p = 0; p < num; p += 2 * width)
+		for (p = 0; p < num; p += 2 * m_width)
 		{
-			size_t q = (p + width > num) ? num : (p + width);
-			size_t r = (p + 2 * width > num) ? num : (p + 2 * width);
+			size_t q = (p + m_width > num) ? num : (p + m_width);
+			size_t r = (p + 2 * m_width > num) ? num : (p + 2 * m_width);
 			size_t i = p, j = q, k;
 			for (k = p; k < r; k++)
 			{

@@ -6,12 +6,12 @@
 
 class ScnMgr
 {
-	Renderer *renderer = NULL;
-	int rad = 0;
-	int oldTime;
-	GLuint texIssac;
+	Renderer *m_Renderer = NULL;
+	int m_rad = 0;
+	int m_oldTime;
+	GLuint m_texIssac;
 
-	Object *m_Objecct[MAX_OBJECT] = { nullptr };
+	Object *m_Object[MAX_OBJECT] = { nullptr };
 
 	int FindEmptySlot();
 		
@@ -26,10 +26,12 @@ public:
 	void UpdateCollision();
 	bool RRCollision(float a_minX, float a_maxX, float a_minY, float a_maxY, float b_minX, float b_maxX, float b_minY, float b_maxY);
 
-	void ApplyForce(float fx, float fy, float eTime);
+	void ApplyForce(float fx, float fy, float fz, float eTime);
 	void Shoot(int direct);
 
-	void AddObject(float x, float y, float z, float vx, float vy, float width, float height);
+	void AddObject(float x, float y, float z, float vx, float vy, float m_width, float m_height, int m_kind, int health, int state);
 	void DeleteObject(int id);
+
+	void DoGarbageCollect();
 };
 

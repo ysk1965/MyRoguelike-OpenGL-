@@ -2,15 +2,18 @@
 
 class Object
 {
-	float posX, posY, posZ;
-	float width, height;
+	float m_posX, m_posY, m_posZ;
+	float m_width, m_height;
 	float red, green, blue, alpaha;
-	float velX, velY;
-	float accX, accY;
-	float mass;
+	float m_velX, m_velY, m_velZ;
+	float m_accX, m_accY, m_accZ;
+	float m_mass;
 	float m_friction = 0.5;
-	int rad = 0;
-	int kind;
+	int m_rad = 0;
+	int m_kind;
+	int m_health = 1;
+	int m_state;
+
 
 public:
 	Object();
@@ -22,8 +25,12 @@ public:
 	void set_z(float z);
 	void set_vx(float vx);
 	void set_vy(float vy);
+	void set_vz(float vz);
+
 	void set_ax(float ax);
 	void set_ay(float ay);
+	void set_az(float az);
+
 	void set_w(float w);
 	void set_h(float h);
 	void set_r(float r); 
@@ -32,16 +39,20 @@ public:
 	void set_a(float a);
 	void set_mass(float m);
 	void set_kind(int k);
+	void set_health(int h);
+	void set_state(int s);
 
 	void get_pos(float *x, float *y, float *z);
-	void get_vel(float *vx, float *vy);
-	void get_acc(float *ax, float *ay);
+	void get_vel(float *vx, float *vy, float *vz);
+	void get_acc(float *ax, float *ay, float *az);
 	void get_size(float *w, float *h);
 	void get_color(float *r, float *g, float *b, float *a);
 	void get_mass(float *m);
 	void get_kind(int *k);
+	void get_health(int *h);
+	void get_state(int *s);
 
 	void Update(float eTime);
 
-	void ApplyForce(float fx, float fy, float eTime);
+	void ApplyForce(float fx, float fy, float fz, float eTime);
 };

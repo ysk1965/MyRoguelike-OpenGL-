@@ -94,13 +94,13 @@ GLuint Renderer::CreatePngTexture(char * filePath)
 	//Load Pngs
 	// Load file and decode image.
 	std::vector<unsigned char> image;
-	unsigned width, height;
-	unsigned error = lodepng::decode(image, width, height, filePath);
+	unsigned m_width, m_height;
+	unsigned error = lodepng::decode(image, m_width, m_height, filePath);
 
 	glBindTexture(GL_TEXTURE_2D, temp);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &image[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &image[0]);
 
 	return temp;
 }
@@ -280,15 +280,15 @@ void Renderer::DrawTextureRect(float x, float y, float z, float sizeX, float siz
 	glDisable(GL_BLEND);
 }
 
-void Renderer::DrawTextureRectHeight(float x, float y, float z, float sizeX, float sizeY, float r, float g, float b, float a, GLuint texID, float height)
+void Renderer::DrawTextureRectHeight(float x, float y, float z, float sizeX, float sizeY, float r, float g, float b, float a, GLuint texID, float m_height)
 {
-	if (height < 0.f)
+	if (m_height < 0.f)
 		return;
 
 	float newX, newY, shadowY, baseY;
 
 	GetGLPosition(x, y, &newX, &newY);
-	GetGLShadow(height, &shadowY);
+	GetGLShadow(m_height, &shadowY);
 	GetGLShadow(sizeY/2.f, &baseY);
 
 	glEnable(GL_BLEND);

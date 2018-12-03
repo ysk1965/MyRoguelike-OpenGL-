@@ -4,34 +4,35 @@
 
 ScnMgr::ScnMgr()
 {
-	for (Object* obj:m_Objecct)
+	for (Object* obj:m_Object)
 		obj = nullptr;
 
-	renderer = new Renderer(500, 500);
-	if (!renderer->IsInitialized())
+	m_Renderer = new Renderer(500, 500);
+	if (!m_Renderer->IsInitialized())
 	{
 		std::cout << "Renderer could not be initialized.. \n";
 	}
 
-	m_Objecct[HERO_ID] = new Object();
-	m_Objecct[HERO_ID]->set(0.f, 0.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f);
-	m_Objecct[HERO_ID]->set_z(0.5f);
-	m_Objecct[HERO_ID]->set_vx(0.f);
-	m_Objecct[HERO_ID]->set_vy(0.f);
-	m_Objecct[HERO_ID]->set_ax(0.f);
-	m_Objecct[HERO_ID]->set_ay(0.f);
-	m_Objecct[HERO_ID]->set_mass(1.f);
-	m_Objecct[HERO_ID]->set_kind(KIND_HERO);
+	m_Object[HERO_ID] = new Object();
+	m_Object[HERO_ID]->set(0.f, 0.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f);
+	m_Object[HERO_ID]->set_z(0.0f);
+	m_Object[HERO_ID]->set_vx(0.f);
+	m_Object[HERO_ID]->set_vy(0.f);
+	m_Object[HERO_ID]->set_vz(0.f);
+	m_Object[HERO_ID]->set_ax(0.f);
+	m_Object[HERO_ID]->set_ay(0.f);
+	m_Object[HERO_ID]->set_vz(0.f);
+	m_Object[HERO_ID]->set_mass(1.f);
+	m_Object[HERO_ID]->set_kind(KIND_HERO);
 
-	texIssac = renderer->CreatePngTexture("issac.png");
-	
+	m_texIssac = m_Renderer->CreatePngTexture("issac.png");
 }
 
 
 ScnMgr::~ScnMgr()
 {
-	renderer->DeleteTexture(texIssac);
-	delete renderer;
+	m_Renderer->DeleteTexture(m_texIssac);
+	delete m_Renderer;
 	for (int i = 0; i < MAX_OBJECT; i++)
 	{
 		DeleteObject(i);
@@ -41,17 +42,19 @@ ScnMgr::~ScnMgr()
 void ScnMgr::RenderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.5f, 0.1f, 0.7f, 1.0f);
+	glClearColor(0.3f, 0.1f, 0.2f, 1.0f);
 
 	// Renderer Test
 
 	float x, y, z;
 	float w, h;
 	float r, g, b, a;
+	int state = STATE_GROUND;
 
-	m_Objecct[HERO_ID]->get_pos(&x, &y, &z);
-	m_Objecct[HERO_ID]->get_size(&w, &h);
-	m_Objecct[HERO_ID]->get_color(&r, &g, &b, &a);
+	m_Object[HERO_ID]->get_pos(&x, &y, &z);
+	m_Object[HERO_ID]->get_size(&w, &h);
+	m_Object[HERO_ID]->get_color(&r, &g, &b, &a);
+	m_Object[HERO_ID]->get_state(&state);
 
 	float newX, newY, newZ, newW, newH;
 	newX = x * 100;
@@ -60,25 +63,28 @@ void ScnMgr::RenderScene()
 	newW = w * 300;
 	newH = h * 300;
 
-	renderer->DrawTextureRectHeight(newX, newY, 0, newW, newH, r, g, b, a, texIssac, newZ);
+	m_Renderer->DrawTextureRectHeight(newX, newY, 0, newW, newH, r, g, b, a, m_texIssac, newZ);
+
+	// Add Building
+	//AddObject(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 1.f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
 
 	for (int i = 0; i < MAX_OBJECT; i++)
 	{
 		if( i == HERO_ID);
-		else if (m_Objecct[i] != nullptr)
+		else if (m_Object[i] != nullptr)
 		{
-			m_Objecct[i]->get_pos(&x, &y, &z);
-			m_Objecct[i]->get_size(&w, &h);
-			m_Objecct[i]->get_color(&r, &g, &b, &a);
+			m_Object[i]->get_pos(&x, &y, &z);
+			m_Object[i]->get_size(&w, &h);
+			m_Object[i]->get_color(&r, &g, &b, &a);
 
 			newX = x * 100;
 			newY = y * 100;
 			newZ = z * 100;
+
 			newW = w * 100;
 			newH = h * 100;
 
-
-			renderer->DrawSolidRect(newX, newY, newZ, newW, newH, r, g, b, a);
+			m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, r, g, b, a);
 		}
 	}
 }
@@ -87,22 +93,23 @@ void ScnMgr::Update(float eTime)
 {
 	for (int i = 0; i < MAX_OBJECT; i++)
 	{
-		if (m_Objecct[i] != nullptr)
-			m_Objecct[i]->Update(eTime);
+		if (m_Object[i] != nullptr)
+			m_Object[i]->Update(eTime);
 	}
 
 	UpdateCollision();
+	DoGarbageCollect();
 }
 
-void ScnMgr::ApplyForce(float fx, float fy, float eTime)
+void ScnMgr::ApplyForce(float fx, float fy, float fz, float eTime)
 {
-	m_Objecct[HERO_ID]->ApplyForce(fx, fy, eTime);
+	m_Object[HERO_ID]->ApplyForce(fx, fy, fz, eTime);
 }
 
 void ScnMgr::Shoot(int direct)
 {
 	float x, y, z;
-	float vx, vy;
+	float vx, vy, vz;
 	float bvX = 0.f, bvY = 0.f;
 	float amount = 5.f;
 	
@@ -115,13 +122,13 @@ void ScnMgr::Shoot(int direct)
 	else if (direct == SHOOT_RIGHT)
 		bvX += amount;
 
-	m_Objecct[HERO_ID]->get_pos(&x, &y, &z);
-	m_Objecct[HERO_ID]->get_vel(&vx, &vy);
+	m_Object[HERO_ID]->get_pos(&x, &y, &z);
+	m_Object[HERO_ID]->get_vel(&vx, &vy, &vz);
 
 	bvX += vx;
 	bvY += vy;
 
-	AddObject(x, y, z, bvX, bvY, 0.2f, 0.2f);
+	AddObject(x, y, z, bvX, bvY, 0.2f, 0.2f, KIND_BULLET, 1, STATE_GROUND);
 }
 
 int ScnMgr::FindEmptySlot()
@@ -130,7 +137,7 @@ int ScnMgr::FindEmptySlot()
 	int index = -1;
 	for (int i = 0; i < MAX_OBJECT; i++)
 	{
-		if (m_Objecct[i] == nullptr)
+		if (m_Object[i] == nullptr)
 		{
 			index = i;
 			break;
@@ -143,28 +150,70 @@ int ScnMgr::FindEmptySlot()
 	return index;
 }
 
-void ScnMgr::AddObject(float x, float y, float z, float vx, float vy, float width, float height)
+void ScnMgr::AddObject(float x, float y, float z, float vx, float vy, float m_width, float m_height, int m_kind, int health, int state)
 {
 	int index = FindEmptySlot();
 
 	if (index != -1)
 	{
-		m_Objecct[index] = new Object();
-		m_Objecct[index]->set(x, y, width, height, 1.f, 1.f, 1.f, 1.f);
-		m_Objecct[index]->set_z(z);
-		m_Objecct[index]->set_vx(vx);
-		m_Objecct[index]->set_vy(vy);
-		m_Objecct[index]->set_ax(0);
-		m_Objecct[index]->set_ay(0);
+		m_Object[index] = new Object();
+		m_Object[index]->set(x, y, m_width, m_height, 1.f, 1.f, 1.f, 1.f);
+		m_Object[index]->set_z(z);
+		m_Object[index]->set_vx(vx);
+		m_Object[index]->set_vy(vy);
+		m_Object[index]->set_ax(0);
+		m_Object[index]->set_ay(0);
+		m_Object[index]->set_kind(m_kind);
+		m_Object[index]->set_health(1);
+		m_Object[index]->set_state(state);
 	}
 }
 
 void ScnMgr::DeleteObject(int id)
 {
-	if (m_Objecct[id] != nullptr)
+	if (m_Object[id] != nullptr)
 	{
-		delete m_Objecct[id];
-		m_Objecct[id] = nullptr;
+		delete m_Object[id];
+		m_Object[id] = nullptr;
+	}
+}
+
+void ScnMgr::DoGarbageCollect()
+{
+	for (int i = 0; i < MAX_OBJECT; i++) {
+		if (m_Object[i] == NULL) continue;
+
+		int health, m_kind;
+		float vel, vx, vy, vz, px, py, pz;
+		m_Object[i]->get_kind(&m_kind);
+		m_Object[i]->get_health(&health);
+		m_Object[i]->get_vel(&vx, &vy, &vz);
+		m_Object[i]->get_pos(&px, &py, &pz);
+
+		vel = sqrtf(vx * vx + vy * vy + vz * vz);
+
+		// Check Velocity
+		if (vel < FLT_EPSILON && m_kind == KIND_BULLET) {
+			cout << "Check Velocity - " << i << endl;
+			DeleteObject(i);
+			continue;
+		}
+
+		// Check Health
+		if (health <= 0 && (m_kind == KIND_BULLET || m_kind == KIND_BUILDING)) {
+			cout << "Check Health - " << i << endl;
+			DeleteObject(i);
+			continue;
+		}
+
+		// Check Outofbounce
+		if (px < -2.5f || px > 2.5f || py < -2.5f || py > 2.5f) {
+			if (m_kind == KIND_BULLET) {
+				cout << "Check Outofbounce - " << i << endl;
+				DeleteObject(i);
+				continue;
+			}
+		}
 	}
 }
 
@@ -192,24 +241,26 @@ void ScnMgr::UpdateCollision()
 	{
 		for(int j = i + 1; j<MAX_OBJECT; j++)
 		{
-			if (m_Objecct[i]!=nullptr && m_Objecct[j] != nullptr)
+			if (m_Object[i]!=nullptr && m_Object[j] != nullptr)
 			{
-				m_Objecct[i]->get_pos(&a_minX, &a_minY, &z);
-				m_Objecct[i]->get_size(&a_MaxX, &a_MaxY);
+				m_Object[i]->get_pos(&a_minX, &a_minY, &z);
+				m_Object[i]->get_size(&a_MaxX, &a_MaxY);
 				a_MaxX += a_minX;
 				a_MaxY += a_minY;
 
-				m_Objecct[j]->get_pos(&b_minX, &b_minY, &z);
-				m_Objecct[j]->get_size(&b_MaxX, &b_MaxY);
+				m_Object[j]->get_pos(&b_minX, &b_minY, &z);
+				m_Object[j]->get_size(&b_MaxX, &b_MaxY);
 				b_MaxX += b_minX;
 				b_MaxY += b_minY;
 
 				if (RRCollision(a_minX, a_MaxX, a_minY, a_MaxY,b_minX, b_MaxX, b_minY, b_MaxY ))
 				{
-					m_Objecct[i]->set_g(0);
-					m_Objecct[i]->set_b(0);
-					m_Objecct[j]->set_g(0);
-					m_Objecct[j]->set_b(0);
+					m_Object[i]->set_r(0);
+					m_Object[i]->set_b(0);
+					m_Object[j]->set_g(0);
+					m_Object[j]->set_b(0);
+
+					m_Object[j]->set_health(0);
 				}
 			}
 		}
