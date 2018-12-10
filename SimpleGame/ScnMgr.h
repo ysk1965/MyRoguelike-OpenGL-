@@ -3,6 +3,7 @@
 #include "Renderer.h"
 #include "Object.h"
 #include "global.h"
+#include "Sound.h"
 
 class ScnMgr
 {
@@ -10,6 +11,11 @@ class ScnMgr
 	int m_rad = 0;
 	int m_oldTime;
 	GLuint m_texIssac;
+
+	Sound *m_Sound = NULL;
+	int m_SoundBG = 0;
+	int m_SoundFire = 0;
+	int m_SoundExplosion = 0;
 
 	Object *m_Object[MAX_OBJECT] = { nullptr };
 

@@ -13,6 +13,13 @@ ScnMgr::ScnMgr()
 		std::cout << "Renderer could not be initialized.. \n";
 	}
 
+	m_Sound = new Sound();
+	m_SoundBG = m_Sound->CreateSound("./Sound/Sketch3.wav");
+	m_SoundFire = m_Sound->CreateSound("./Sound/Shoot.wav");
+	m_SoundExplosion = m_Sound->CreateSound("./Sound/Explosion.wav");
+
+	m_Sound->PlaySound(m_SoundBG, true, 1);
+
 	m_Object[HERO_ID] = new Object();
 	m_Object[HERO_ID]->set(0.f, 0.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f);
 	m_Object[HERO_ID]->set_z(0.0f);
@@ -21,11 +28,14 @@ ScnMgr::ScnMgr()
 	m_Object[HERO_ID]->set_vz(0.f);
 	m_Object[HERO_ID]->set_ax(0.f);
 	m_Object[HERO_ID]->set_ay(0.f);
-	m_Object[HERO_ID]->set_vz(0.f);
+	m_Object[HERO_ID]->set_az(0.f);
 	m_Object[HERO_ID]->set_mass(1.f);
 	m_Object[HERO_ID]->set_kind(KIND_HERO);
 
 	m_texIssac = m_Renderer->CreatePngTexture("issac.png");
+
+	// Add Building
+	AddObject(1.f, 0.f, 0.f, 0.f, 0.f, 0.5f, 0.5f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
 }
 
 
@@ -65,9 +75,6 @@ void ScnMgr::RenderScene()
 
 	m_Renderer->DrawTextureRectHeight(newX, newY, 0, newW, newH, r, g, b, a, m_texIssac, newZ);
 
-	// Add Building
-	//AddObject(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 1.f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
-
 	for (int i = 0; i < MAX_OBJECT; i++)
 	{
 		if( i == HERO_ID);
@@ -103,6 +110,16 @@ void ScnMgr::Update(float eTime)
 
 void ScnMgr::ApplyForce(float fx, float fy, float fz, float eTime)
 {
+	int state;
+	float pos_z;
+	m_Object[HERO_ID]->get_state(&state);
+	m_Object[HERO_ID]->get_pos(0,0,&pos_z);
+	if (state == STATE_AIR) {
+		fz = 0;
+		//cout << "air" << endl;
+	}
+	//cout << state << endl;
+	//cout << fz << endl;
 	m_Object[HERO_ID]->ApplyForce(fx, fy, fz, eTime);
 }
 
@@ -129,6 +146,7 @@ void ScnMgr::Shoot(int direct)
 	bvY += vy;
 
 	AddObject(x, y, z, bvX, bvY, 0.2f, 0.2f, KIND_BULLET, 1, STATE_GROUND);
+	m_Sound->PlaySound(m_SoundFire, false, 1);
 }
 
 int ScnMgr::FindEmptySlot()
@@ -167,6 +185,7 @@ void ScnMgr::AddObject(float x, float y, float z, float vx, float vy, float m_wi
 		m_Object[index]->set_health(1);
 		m_Object[index]->set_state(state);
 	}
+	//cout << m_kind << endl;
 }
 
 void ScnMgr::DeleteObject(int id)
@@ -255,12 +274,22 @@ void ScnMgr::UpdateCollision()
 
 				if (RRCollision(a_minX, a_MaxX, a_minY, a_MaxY,b_minX, b_MaxX, b_minY, b_MaxY ))
 				{
-					m_Object[i]->set_r(0);
-					m_Object[i]->set_b(0);
-					m_Object[j]->set_g(0);
-					m_Object[j]->set_b(0);
+					//m_Object[i]->set_r(0);
+					//m_Object[i]->set_b(0);
+					//m_Object[j]->set_g(0);
+					//m_Object[j]->set_b(0);
+					int isBuilding, iHealth;
+					m_Object[i]->get_kind(&isBuilding);
+					m_Object[i]->get_health(&iHealth);
 
-					m_Object[j]->set_health(0);
+					if (isBuilding == KIND_BUILDING) {
+						//cout << "Building Check" << endl;
+						m_Object[i]->set_r(0.1*(rand() % 10));
+						m_Object[i]->set_g(0.1*(rand() % 10));
+						m_Object[i]->set_b(0.1*(rand() % 10));
+					}
+					m_Object[j]->set_health(--iHealth);
+					cout << iHealth << endl;
 				}
 			}
 		}

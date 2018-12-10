@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Object.h"
+#include "global.h"
 #include <math.h>
 #include <float.h>
 #include <iostream>
@@ -58,7 +59,7 @@ void Object::Update(float eTime)
 	{
 		//gravity force
 		float gz;
-		gz = 9.8 * m_mass; // == 수직항력
+		gz = GRAVITY * m_mass; // == 수직항력
 		float friction;
 		friction = m_friction * gz;
 		
@@ -83,6 +84,9 @@ void Object::Update(float eTime)
 			m_velY = 0;
 		else
 			m_velY = afterVelY;
+
+		// gravity calculation
+		m_velZ = m_velZ - GRAVITY * eTime;
 	}
 
 	m_velX = m_velX + eTime * m_accX;
@@ -92,6 +96,15 @@ void Object::Update(float eTime)
 	m_posX = m_posX + eTime * m_velX;
 	m_posY = m_posY + eTime * m_velY;
 	m_posZ = m_posZ + eTime * m_velZ;
+
+	if (m_posZ > 0.f) { // 떠 있을 때와 그렇지 않을 때 예외처리
+		m_state = STATE_AIR;
+	}
+	else {
+		m_state = STATE_GROUND;
+		m_posZ = 0.f; // 지속적으로 파고 들어가면 안됨
+		m_velZ = 0.f;
+	}
 
 	m_posZ = m_posZ + (sin(m_rad * 3.14 / 180)) * 0.05;
 	m_rad = (m_rad + 10) % 360;
