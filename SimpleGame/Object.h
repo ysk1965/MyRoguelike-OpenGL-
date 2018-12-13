@@ -42,6 +42,7 @@ public:
 	void set_health(int h);
 	void set_state(int s);
 
+	void get_posZ(float *z);
 	void get_pos(float *x, float *y, float *z);
 	void get_vel(float *vx, float *vy, float *vz);
 	void get_acc(float *ax, float *ay, float *az);

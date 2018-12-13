@@ -40,6 +40,7 @@ void Object::set_kind(int k) { m_kind = k; }
 void Object::set_health(int h) { m_health = h; }
 void Object::set_state(int s) { m_state = s; }
 
+void Object::get_posZ(float *z) { *z = m_posZ; }
 void Object::get_pos(float *x, float *y, float *z) { *x = m_posX; *y = m_posY; *z = m_posZ; }
 void Object::get_vel(float *vx, float *vy, float *vz) { *vx = m_velX; *vy = m_velY; *vz = m_velZ; }
 void Object::get_acc(float *ax, float *ay, float *az) { *ax = m_accX; *ay = m_accY; *az = m_accZ; }
@@ -106,8 +107,8 @@ void Object::Update(float eTime)
 		m_velZ = 0.f;
 	}
 
-	m_posZ = m_posZ + (sin(m_rad * 3.14 / 180)) * 0.05;
-	m_rad = (m_rad + 10) % 360;
+	//m_posZ = m_posZ + (sin(m_rad * 3.14 / 180)) * 0.05;
+	//m_rad = (m_rad + 10) % 360;
 
 }
 

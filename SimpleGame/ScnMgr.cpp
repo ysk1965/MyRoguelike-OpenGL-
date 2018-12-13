@@ -113,13 +113,14 @@ void ScnMgr::ApplyForce(float fx, float fy, float fz, float eTime)
 	int state;
 	float pos_z;
 	m_Object[HERO_ID]->get_state(&state);
-	m_Object[HERO_ID]->get_pos(0,0,&pos_z);
+	m_Object[HERO_ID]->get_posZ(&pos_z);
 	if (state == STATE_AIR) {
 		fz = 0;
-		//cout << "air" << endl;
 	}
-	//cout << state << endl;
-	//cout << fz << endl;
+	else {
+		m_Object[HERO_ID]->set_z(pos_z += fz / 5);
+	}
+
 	m_Object[HERO_ID]->ApplyForce(fx, fy, fz, eTime);
 }
 
