@@ -275,10 +275,6 @@ void ScnMgr::UpdateCollision()
 
 				if (RRCollision(a_minX, a_MaxX, a_minY, a_MaxY,b_minX, b_MaxX, b_minY, b_MaxY ))
 				{
-					//m_Object[i]->set_r(0);
-					//m_Object[i]->set_b(0);
-					//m_Object[j]->set_g(0);
-					//m_Object[j]->set_b(0);
 					int isBuilding, iHealth;
 					m_Object[i]->get_kind(&isBuilding);
 					m_Object[i]->get_health(&iHealth);
