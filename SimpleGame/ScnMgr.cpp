@@ -129,7 +129,40 @@ void ScnMgr::UIScene() {
 void ScnMgr::RenderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(killscore / 100.f, killscore / 100.f, killscore / 100.f, 1.0f);
+	glClearColor(killscore / 35.f, killscore / 35.f, killscore / 35.f, 1.0f);
+	if (killscore < 5) {
+		level_curX = 4.f;
+		level_speed = 50.0f;
+	}
+	else if (killscore < 10) {
+		level_curX = 6.f;
+		level_speed = 60.f;
+	}
+	else if (killscore < 15) {
+		level_curX = 8.f;
+		level_speed = 70.f;
+	}
+	else if (killscore < 20) {
+		level_curX = 10.f;
+		level_speed = 80.f;
+	}
+	else if (killscore < 25) {
+		level_curX = 12.f;
+		level_speed = 90.f;
+	}
+	else if (killscore < 30) {
+		level_curX = 13.f;
+		level_speed = 100.f;
+	}
+	else if (killscore < 35) {
+		level_curX = 14.f;
+		level_speed = 110.f;
+	}
+	else if (killscore < 40) {
+		level_curX = 14.f;
+		level_speed = 120.f;
+	}
+
 
 	if (isUIScene) {
 		SceneInit();
@@ -154,11 +187,9 @@ void ScnMgr::RenderScene()
 		newX = x * 100;
 		newY = y * 100;
 		newZ = z * 1;
-		newW = w * 200;
-		newH = h * 200;
+		newW = w * 300;
+		newH = h * 300;
 		m_Renderer->SetCameraCenterPos(newX, newY);
-
-
 
 		//m_Renderer->DrawTextureRectHeight(newX, newY, 0, newW, newH, r, g, b, a, m_texIssac, newZ);
 		m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texMonster, m_curX, 0, 5.0f, 5.0f);
@@ -185,7 +216,7 @@ void ScnMgr::RenderScene()
 				newH = h * 100;
 
 				if (kind == KIND_CARD) {
-					m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, tx, ty, 14.0f, 5.0f);
+					m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW + (1.8 * tx), newH + (1.8 * tx), r, g, b, a, m_texCard, tx, ty, 14.0f, 5.0f);
 				}
 				else if (kind == KIND_BUILDING) {
 					m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, r, g, b, a);
@@ -230,12 +261,11 @@ void ScnMgr::Update(float eTime)
 	float hero_px, hero_py, hero_pz;
 	float bullet_sw, bullet_sh;
 	int object_kind;
-	float amount = 50.f;
 	static int spawn_cnt = 0;
 	
 	if (spawnfrequency > 1.f && bfrequency == true) { // 1이 빈도 수 조절
 		spawn_cnt++;
-		if (spawn_cnt % 2 == 0) {
+		if (spawn_cnt % 3 == 0) {
 			CardSpawn();
 		}
 		bfrequency = false;
@@ -264,12 +294,16 @@ void ScnMgr::Update(float eTime)
 
 			m_Object[i]->get_kind(&object_kind);
 			if (object_kind == KIND_CARD) {
-				m_Object[i]->get_vel(&object_vx, &object_vy, &object_vz);
+				m_Object[i]->get_acc(&object_vx, &object_vy, &object_vz);
 				m_Object[i]->get_pos(&object_px, &object_py, &object_pz);
 
-				m_Object[i]->set_vx((hero_px - object_px) * eTime * amount);
-				m_Object[i]->set_vy((hero_py - object_py) * eTime * amount);
-				m_Object[i]->set_vz((hero_pz - object_pz) * eTime * amount);
+				m_Object[i]->set_vx(object_vx + (hero_px - object_px) * eTime * level_speed);
+				m_Object[i]->set_vy(object_vy + (hero_py - object_py) * eTime * level_speed);
+				m_Object[i]->set_vz(object_vz + (hero_pz - object_pz) * eTime * level_speed);
+
+				//m_Object[i]->set_ax((hero_px - object_px) * eTime * level_speed);
+				//m_Object[i]->set_ay((hero_py - object_py) * eTime * level_speed);
+				//m_Object[i]->set_az((hero_pz - object_pz) * eTime * level_speed);
 			}
 			else if (object_kind == KIND_BULLET) {
 				m_Object[i]->get_size(&bullet_sw, &bullet_sh);
@@ -392,7 +426,7 @@ void ScnMgr::AddObject(float x, float y, float z, float vx, float vy, float m_wi
 	if (index != -1)
 	{
 		m_Object[index] = new Object();
-		m_Object[index]->set(x, y, m_width, m_height, 1.f, 1.f, 1.f, 1.f);
+		m_Object[index]->set(x, y, m_width, m_height, 0.01*(rand() % 100), 0.01*(rand() % 100), 0.01*(rand() % 100), 1.f);
 		m_Object[index]->set_z(z);
 		m_Object[index]->set_vx(vx);
 		m_Object[index]->set_vy(vy);
@@ -400,7 +434,12 @@ void ScnMgr::AddObject(float x, float y, float z, float vx, float vy, float m_wi
 		m_Object[index]->set_ay(0);
 		m_Object[index]->set_kind(m_kind);
 		m_Object[index]->set_state(state);
-		m_Object[index]->set_tex(m_curX, m_curY);
+		if (m_curX <= level_curX) {
+			m_Object[index]->set_tex(m_curX, m_curY);
+		}
+		else {
+			m_Object[index]->set_tex(level_curX, m_curY);
+		}
 
 		m_Object[index]->get_tex(&tx, &ty);
 		if (m_kind == KIND_CARD) {

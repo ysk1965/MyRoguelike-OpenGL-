@@ -33,9 +33,13 @@ class ScnMgr
 	int m_attackcard = 0;
 	int killscore = 0;
 	
-	float spawnfrequency = 0.f;
 
 	bool isUIScene = true;
+	
+	//level
+	float level_curX = 3.f;
+	float spawnfrequency = 0.f;
+	float level_speed = 0.1f;
 public:
 	ScnMgr();
 	~ScnMgr();

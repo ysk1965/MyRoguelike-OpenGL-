@@ -142,7 +142,7 @@ void SpecialKeyDownInput(int key, int x, int y)
 		scn->Shoot(shoot);
 		scn->SceneChange();
 		break;
-	case GLUT_ENTERED:
+	case GLUT_KEY_F1:
 		scn->SceneChange();
 		cout << "EnterKey" << endl;
 	}
