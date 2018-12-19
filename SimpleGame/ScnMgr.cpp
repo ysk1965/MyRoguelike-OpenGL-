@@ -63,6 +63,7 @@ void ScnMgr::RenderScene()
 	float x, y, z;
 	float w, h;
 	float r, g, b, a;
+	float tx, ty;
 	int state = STATE_GROUND;
 	int kind;
 
@@ -93,6 +94,7 @@ void ScnMgr::RenderScene()
 			m_Object[i]->get_size(&w, &h);
 			m_Object[i]->get_color(&r, &g, &b, &a);
 			m_Object[i]->get_kind(&kind);
+			m_Object[i]->get_tex(&tx, &ty);
 
 			newX = x * 100;
 			newY = y * 100;
@@ -102,13 +104,13 @@ void ScnMgr::RenderScene()
 			newH = h * 100;
 
 			if (kind == KIND_CARD) {
-				m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, m_curX, m_curY, 14.0f, 5.0f);
+				m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, tx, ty, 14.0f, 5.0f);
 			}
 			else if (kind == KIND_BUILDING) {
 				m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, r, g, b, a);
 			}
 			else if (kind == KIND_BULLET) {
-				m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW / 2, newH / 2, r, g, b, a, m_texExplosion, m_curX, m_curY, 9.0f, 9.0f);
+				m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texExplosion, m_curX, m_curY, 9.0f, 9.0f);
 			}
 		}
 	}
@@ -117,15 +119,17 @@ void ScnMgr::RenderScene()
 void ScnMgr::CardSpawn(float eTime) {
 	float x, y, z;
 	float vx, vy, vz;
+	float tx, ty;
 	float bvX = 0.f, bvY = 0.f;
-	int health = 5;
-	float hx, hy, hz;
+	int health = 2;
+	float hx, hy, hz; // hero
 
 	m_Object[HERO_ID]->get_pos(&hx, &hy, &hz);
-
+	
 	while (true) {
-		x = rand() % 960 * 0.01 - 4.80;
-		y = rand() % 540 * 0.01 - 2.70;
+		
+		x = rand() % 960 * 0.01f - 4.80f;
+		y = rand() % 540 * 0.01f - 2.70f;
 		z = 0;
 		if (sqrt((hx - x)*(hx - x) + (hy - y) * (hy - y)) > 1) {
 			break;
@@ -140,7 +144,7 @@ void ScnMgr::CardSpawn(float eTime) {
 void ScnMgr::Update(float eTime)
 {
 	spawnfrequency += eTime;
-	if (spawnfrequency > 1) {
+	if (spawnfrequency > 3) {
 		cout << spawnfrequency << endl;
 		CardSpawn(eTime);
 		spawnfrequency = 0;
@@ -156,9 +160,9 @@ void ScnMgr::Update(float eTime)
 	if (m_curX > 14.f)
 	{
 		m_curX = 0.f;
-		//m_curY += 1.f;
-		//if (m_curY > 3.f)
-		//m_curY = 0.f;
+		m_curY += 1.f;
+		if (m_curY > 3.f)
+		m_curY = 0.f;
 	}
 
 	UpdateCollision();
@@ -203,7 +207,7 @@ void ScnMgr::Shoot(int direct)
 	bvX += vx;
 	bvY += vy;
 
-	AddObject(x, y, z, bvX, bvY, 0.1f, 0.1f, KIND_BULLET, 1, STATE_GROUND);
+	AddObject(x, y, z, bvX, bvY, 0.3f, 0.3f, KIND_BULLET, 1, STATE_GROUND);
 	m_Sound->PlaySound(m_SoundFire, false, 1);
 }
 
@@ -229,6 +233,7 @@ int ScnMgr::FindEmptySlot()
 void ScnMgr::AddObject(float x, float y, float z, float vx, float vy, float m_width, float m_height, int m_kind, int health, int state)
 {
 	int index = FindEmptySlot();
+	float tx, ty;
 
 	if (index != -1)
 	{
@@ -240,10 +245,20 @@ void ScnMgr::AddObject(float x, float y, float z, float vx, float vy, float m_wi
 		m_Object[index]->set_ax(0);
 		m_Object[index]->set_ay(0);
 		m_Object[index]->set_kind(m_kind);
-		m_Object[index]->set_health(health);
 		m_Object[index]->set_state(state);
+		m_Object[index]->set_tex(m_curX, m_curY);
+
+		m_Object[index]->get_tex(&tx, &ty);
+		if (m_kind == KIND_CARD) {
+			m_Object[index]->set_health(tx + 1);
+			m_Object[index]->get_health(&health);
+			cout << "new Health : " << health << endl;
+		}
+		else {
+			m_Object[index]->set_health(health);
+		}
 	}
-	//cout << m_kind << endl;
+
 }
 
 void ScnMgr::DeleteObject(int id)
@@ -277,8 +292,8 @@ void ScnMgr::DoGarbageCollect()
 		}
 
 		// Check Health
-		if (health <= 0 && (m_kind == KIND_BULLET || m_kind == KIND_BUILDING)) {
-			cout << "Check Health - " << i << endl;
+		if (health <= 0 && (m_kind == KIND_BULLET || m_kind == KIND_BUILDING || m_kind == KIND_CARD)) {
+			cout << "Check Health - " << i << "[" << health << "]" <<endl;
 			DeleteObject(i);
 			continue;
 		}
@@ -313,6 +328,8 @@ void ScnMgr::UpdateCollision()
 	float a_minX, a_MaxX, a_minY, a_MaxY;
 	float b_minX, b_MaxX, b_minY, b_MaxY;
 	float z; 
+	int kind_J, kind_I;
+	int health_J, health_I;
 
 	for (int i = HERO_ID + 1; i < MAX_OBJECT; i++)
 	{
@@ -320,30 +337,60 @@ void ScnMgr::UpdateCollision()
 		{
 			if (m_Object[i]!=nullptr && m_Object[j] != nullptr)
 			{
+				m_Object[i]->get_kind(&kind_I);
+				m_Object[i]->get_health(&health_I);
 				m_Object[i]->get_pos(&a_minX, &a_minY, &z);
 				m_Object[i]->get_size(&a_MaxX, &a_MaxY);
 				a_MaxX += a_minX;
 				a_MaxY += a_minY;
 
+				m_Object[j]->get_kind(&kind_J);
+				m_Object[j]->get_health(&health_J);
 				m_Object[j]->get_pos(&b_minX, &b_minY, &z);
 				m_Object[j]->get_size(&b_MaxX, &b_MaxY);
 				b_MaxX += b_minX;
 				b_MaxY += b_minY;
 
+
 				if (RRCollision(a_minX, a_MaxX, a_minY, a_MaxY,b_minX, b_MaxX, b_minY, b_MaxY ))
 				{
-					int kind, iHealth;
-					m_Object[i]->get_kind(&kind);
-					m_Object[i]->get_health(&iHealth);
+					float tx, ty;
 
-					if (kind == KIND_BUILDING) {
-						//cout << "Building Check" << endl;
-						m_Object[i]->set_r(0.01*(rand() % 100));
-						m_Object[i]->set_g(0.01*(rand() % 100));
-						m_Object[i]->set_b(0.01*(rand() % 100));
+					// Bullet 은 i이던 j이던 health가 깍여야 함.
+					if (kind_I == KIND_BULLET) {
+						m_Object[i]->set_health(--health_I); // bullet
+
+						if (kind_J == KIND_BUILDING) {
+							//cout << "Building Check" << endl;
+							m_Object[j]->set_r(0.01*(rand() % 100));
+							m_Object[j]->set_g(0.01*(rand() % 100));
+							m_Object[j]->set_b(0.01*(rand() % 100));
+						}
+						else if (kind_J == KIND_CARD) {
+							m_Object[j]->get_tex(&tx, &ty);
+
+							m_Object[j]->set_tex(--tx, ty);
+							m_Object[j]->set_health(--health_J);
+							cout << "health : " << health_J << endl;
+						}
 					}
-					m_Object[j]->set_health(--iHealth);
-					//cout << iHealth << endl;
+					else if (kind_J == KIND_BULLET) {
+						m_Object[j]->set_health(--health_J); // bullet
+
+						if (kind_I == KIND_BUILDING) {
+							//cout << "Building Check" << endl;
+							m_Object[i]->set_r(0.01*(rand() % 100));
+							m_Object[i]->set_g(0.01*(rand() % 100));
+							m_Object[i]->set_b(0.01*(rand() % 100));
+						}
+						else if (kind_I == KIND_CARD) {
+							m_Object[i]->get_tex(&tx, &ty);
+
+							m_Object[i]->set_tex(--tx, ty);
+							m_Object[i]->set_health(--health_I);
+							cout << "health : " << health_I << endl;
+						}
+					}
 				}
 			}
 		}

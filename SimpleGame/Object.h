@@ -13,7 +13,7 @@ class Object
 	int m_kind;
 	int m_health = 1;
 	int m_state;
-
+	float m_texX, m_texY;
 
 public:
 	Object();
@@ -41,8 +41,10 @@ public:
 	void set_kind(int k);
 	void set_health(int h);
 	void set_state(int s);
+	void set_tex(float tx, float ty);
 
 	void get_posZ(float *z);
+	void get_tex(float *tx, float *ty);
 	void get_pos(float *x, float *y, float *z);
 	void get_vel(float *vx, float *vy, float *vz);
 	void get_acc(float *ax, float *ay, float *az);
