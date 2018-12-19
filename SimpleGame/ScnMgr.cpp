@@ -39,8 +39,19 @@ ScnMgr::ScnMgr()
 	m_texMonster = m_Renderer->CreatePngTexture("monster.png");
 	m_texCard = m_Renderer->CreatePngTexture("card.png");
 
+
+	//if (px < -(RENDERER_W / 200.f) || px >(RENDERER_W / 200.f) || py < -(RENDERER_H / 200.f) || py >(RENDERER_H / 200.f)) {
 	// Add Building
-	AddObject(1.f, 0.f, 0.f, 0.f, 0.f, 0.5f, 0.5f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
+	for (int i = -1; i < 26; i++) {
+		for (int j = -1; j < 16; j++) {
+			if (i == -1 || i == 25) {
+				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f, 0.f, 0.f, 0.f, 0.5f, 0.5f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
+			}
+			if (j == -1 || j == 15) {
+				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f, 0.f, 0.f, 0.f, 0.5f, 0.5f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
+			}
+		}
+	}
 	//AddObject(4.8f, 2.7f, 0.f, 0.f, 0.f, 1.0f, 1.0f, KIND_UI, 10, STATE_GROUND); // 수정필요
 }
 
@@ -63,7 +74,22 @@ void ScnMgr::UIScene() {
 	m_Renderer->DrawTextureRectSeqXY((RENDERER_W/2) - 100, -(RENDERER_H/2) + 100, 1.f,
 		130.f, 130.f,
 		1.f, 1.f, 1.f, 1.f
-		, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f);
+		, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f); // 우하단
+
+	m_Renderer->DrawTextureRectSeqXY(-(RENDERER_W / 2) + 100, -(RENDERER_H / 2) + 100, 1.f,
+		130.f, 130.f,
+		1.f, 1.f, 1.f, 1.f
+		, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f); // 좌하단
+
+	m_Renderer->DrawTextureRectSeqXY(-(RENDERER_W / 2) + 100, (RENDERER_H / 2) - 100, 1.f,
+		130.f, 130.f,
+		1.f, 1.f, 1.f, 1.f
+		, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f); // 좌상단
+
+	m_Renderer->DrawTextureRectSeqXY((RENDERER_W / 2) - 100, (RENDERER_H / 2) - 100, 1.f,
+		130.f, 130.f,
+		1.f, 1.f, 1.f, 1.f
+		, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f); // 우상단
 }
 
 void ScnMgr::RenderScene()
@@ -92,10 +118,13 @@ void ScnMgr::RenderScene()
 	newZ = z * 1;
 	newW = w * 200;
 	newH = h * 200;
+	m_Renderer->SetCameraCenterPos(newX, newY);
+
+
 
 	//m_Renderer->DrawTextureRectHeight(newX, newY, 0, newW, newH, r, g, b, a, m_texIssac, newZ);
-	m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texMonster, m_curX, m_curY, 5.0f, 5.0f);
-	//
+	m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texMonster, m_curX, 0, 5.0f, 5.0f);
+
 	//m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW/2, newH/2, r, g, b, a, m_texExplosion, m_curX, m_curY, 9.0f, 9.0f);
 
 
@@ -125,7 +154,6 @@ void ScnMgr::RenderScene()
 			}
 			else if (kind == KIND_BULLET) {
 				m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f);
-				//m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texExplosion, m_curX, m_curY, 9.0f, 9.0f);
 			}
 		}
 	}
@@ -385,12 +413,36 @@ void ScnMgr::DoGarbageCollect()
 		}
 
 		// Check Outofbounce  1000 5 // 960 540 
-		if (px < -(RENDERER_W/200.f) || px >(RENDERER_W / 200.f) || py < -(RENDERER_H / 200.f) || py >(RENDERER_H / 200.f)) {
+		if (px < -(RENDERER_W/200.f) - 0.5f || px >(RENDERER_W / 200.f) + 0.5f || py < -(RENDERER_H / 200.f) - 0.5f || py >(RENDERER_H / 200.f) + 0.5f) {
 			if (m_kind == KIND_BULLET) {
 				cout << "Check Outofbounce - " << i << endl;
 				DeleteObject(i);
 				continue;
 			}
+		}
+
+
+		
+		/////////////////////////////////////// Player Collision ///////////////////////////////////////////////////////
+		float saveX, saveY, saveZ;
+		if (px < -(RENDERER_W / 200.f) || px >(RENDERER_W / 200.f) || py < -(RENDERER_H / 200.f) || py >(RENDERER_H / 200.f)) {
+			if (m_kind == KIND_HERO) {
+				cout << "OutOfBounce Player - " << i << endl;
+				m_Object[HERO_ID]->get_savePos(&saveX, &saveY);
+				m_Object[HERO_ID]->set_x(saveX);
+				m_Object[HERO_ID]->set_y(saveY);
+				m_Object[HERO_ID]->set_vx(0);
+				m_Object[HERO_ID]->set_vy(0);
+				m_Object[HERO_ID]->set_vz(0);
+				m_Object[HERO_ID]->set_ax(0);
+				m_Object[HERO_ID]->set_ay(0);
+				m_Object[HERO_ID]->set_az(0);
+				continue;
+			}
+		}
+		else {
+			m_Object[HERO_ID]->get_pos(&saveX, &saveY, &saveZ);
+			m_Object[HERO_ID]->set_savePos(saveX, saveY);
 		}
 	}
 }

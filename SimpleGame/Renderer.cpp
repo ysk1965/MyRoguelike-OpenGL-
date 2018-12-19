@@ -18,8 +18,8 @@ Renderer::~Renderer()
 
 void Renderer::GetGLPosition(float x, float y, float *newX, float *newY)
 {
-	*newX = x * 2.f / m_WindowSizeX;
-	*newY = y * 2.f / m_WindowSizeY;
+	*newX = (x - m_CameraCenterPosX) * 2.f / m_WindowSizeX;
+	*newY = (y - m_CameraCenterPosY) * 2.f / m_WindowSizeY;
 }
 
 void Renderer::GetGLShadow(float x, float *newV)
@@ -66,6 +66,12 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 bool Renderer::IsInitialized()
 {
 	return m_Initialized;
+}
+
+void Renderer::SetCameraCenterPos(float x, float y)
+{
+	m_CameraCenterPosX = x;
+	m_CameraCenterPosY = y;
 }
 
 void Renderer::CreateVertexBufferObjects()

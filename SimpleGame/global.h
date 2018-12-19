@@ -1,6 +1,6 @@
 #pragma once
 
-#define MAX_OBJECT 300
+#define MAX_OBJECT 400
 
 #define HERO_ID 0
 

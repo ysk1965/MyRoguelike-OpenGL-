@@ -27,6 +27,8 @@ public:
 	void DrawSolidRectGauge(float x, float y, float z, float sx, float sy, float r, float g, float b, float a, float height, float gauge);
 	void DrawBorderXY(float x, float y, float z, float width, float height, float r, float g, float b, float a);
 
+	void SetCameraCenterPos(float x, float y);
+
 	GLuint CreatePngTexture(char * filePath);
 	GLuint CreateBmpTexture(char * filePath);
 	void DeleteTexture(GLuint texID);
@@ -69,5 +71,8 @@ private:
 	int m_ParticleVertexCount;
 	int m_ParticleCloudCount;
 	int m_ParticleCloudVertexCount;
+
+	float m_CameraCenterPosX = 0.f;
+	float m_CameraCenterPosY = 0.f;
 };
 
