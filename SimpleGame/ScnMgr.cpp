@@ -7,7 +7,7 @@ ScnMgr::ScnMgr()
 	for (Object* obj:m_Object)
 		obj = nullptr;
 
-	m_Renderer = new Renderer(500, 500);
+	m_Renderer = new Renderer(960, 540);
 	if (!m_Renderer->IsInitialized())
 	{
 		std::cout << "Renderer could not be initialized.. \n";
@@ -21,7 +21,7 @@ ScnMgr::ScnMgr()
 	m_Sound->PlaySound(m_SoundBG, true, 1);
 
 	m_Object[HERO_ID] = new Object();
-	m_Object[HERO_ID]->set(0.f, 0.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f);
+	m_Object[HERO_ID]->set(0.f, 0.f, 0.5f, 0.5f, 1.f, 1.f, 1.f, 1.f);
 	m_Object[HERO_ID]->set_z(0.0f);
 	m_Object[HERO_ID]->set_vx(0.f);
 	m_Object[HERO_ID]->set_vy(0.f);
@@ -33,6 +33,9 @@ ScnMgr::ScnMgr()
 	m_Object[HERO_ID]->set_kind(KIND_HERO);
 
 	m_texIssac = m_Renderer->CreatePngTexture("issac.png");
+	m_texExplosion = m_Renderer->CreatePngTexture("explosion.png");
+	m_texMonster = m_Renderer->CreatePngTexture("monster.png");
+	m_texCard = m_Renderer->CreatePngTexture("card.png");
 
 	// Add Building
 	AddObject(1.f, 0.f, 0.f, 0.f, 0.f, 0.5f, 0.5f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
@@ -42,6 +45,7 @@ ScnMgr::ScnMgr()
 ScnMgr::~ScnMgr()
 {
 	m_Renderer->DeleteTexture(m_texIssac);
+	m_Renderer->DeleteTexture(m_texExplosion);
 	delete m_Renderer;
 	for (int i = 0; i < MAX_OBJECT; i++)
 	{
@@ -52,7 +56,7 @@ ScnMgr::~ScnMgr()
 void ScnMgr::RenderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.3f, 0.1f, 0.2f, 1.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Renderer Test
 
@@ -60,6 +64,7 @@ void ScnMgr::RenderScene()
 	float w, h;
 	float r, g, b, a;
 	int state = STATE_GROUND;
+	int kind;
 
 	m_Object[HERO_ID]->get_pos(&x, &y, &z);
 	m_Object[HERO_ID]->get_size(&w, &h);
@@ -69,11 +74,15 @@ void ScnMgr::RenderScene()
 	float newX, newY, newZ, newW, newH;
 	newX = x * 100;
 	newY = y * 100;
-	newZ = z * 100;
+	newZ = z * 1;
 	newW = w * 300;
 	newH = h * 300;
 
-	m_Renderer->DrawTextureRectHeight(newX, newY, 0, newW, newH, r, g, b, a, m_texIssac, newZ);
+	//m_Renderer->DrawTextureRectHeight(newX, newY, 0, newW, newH, r, g, b, a, m_texIssac, newZ);
+	m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texMonster, m_curX, m_curY, 5.0f, 5.0f);
+	//
+	//m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW/2, newH/2, r, g, b, a, m_texExplosion, m_curX, m_curY, 9.0f, 9.0f);
+
 
 	for (int i = 0; i < MAX_OBJECT; i++)
 	{
@@ -83,6 +92,7 @@ void ScnMgr::RenderScene()
 			m_Object[i]->get_pos(&x, &y, &z);
 			m_Object[i]->get_size(&w, &h);
 			m_Object[i]->get_color(&r, &g, &b, &a);
+			m_Object[i]->get_kind(&kind);
 
 			newX = x * 100;
 			newY = y * 100;
@@ -91,17 +101,64 @@ void ScnMgr::RenderScene()
 			newW = w * 100;
 			newH = h * 100;
 
-			m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, r, g, b, a);
+			if (kind == KIND_CARD) {
+				m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, m_curX, m_curY, 14.0f, 5.0f);
+			}
+			else if (kind == KIND_BUILDING) {
+				m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, r, g, b, a);
+			}
+			else if (kind == KIND_BULLET) {
+				m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW / 2, newH / 2, r, g, b, a, m_texExplosion, m_curX, m_curY, 9.0f, 9.0f);
+			}
 		}
 	}
 }
 
+void ScnMgr::CardSpawn(float eTime) {
+	float x, y, z;
+	float vx, vy, vz;
+	float bvX = 0.f, bvY = 0.f;
+	int health = 5;
+	float hx, hy, hz;
+
+	m_Object[HERO_ID]->get_pos(&hx, &hy, &hz);
+
+	while (true) {
+		x = rand() % 960 * 0.01 - 4.80;
+		y = rand() % 540 * 0.01 - 2.70;
+		z = 0;
+		if (sqrt((hx - x)*(hx - x) + (hy - y) * (hy - y)) > 1) {
+			break;
+		}
+	}
+
+	//cout << "x : " << x << "// y : " << y << endl;
+
+	AddObject(x, y, z, bvX, bvY, 0.5f, 0.5f, KIND_CARD, health, STATE_GROUND);
+}
+
 void ScnMgr::Update(float eTime)
 {
+	spawnfrequency += eTime;
+	if (spawnfrequency > 1) {
+		cout << spawnfrequency << endl;
+		CardSpawn(eTime);
+		spawnfrequency = 0;
+	}
+
 	for (int i = 0; i < MAX_OBJECT; i++)
 	{
 		if (m_Object[i] != nullptr)
 			m_Object[i]->Update(eTime);
+	}
+
+	m_curX += eTime * 10.f;
+	if (m_curX > 14.f)
+	{
+		m_curX = 0.f;
+		//m_curY += 1.f;
+		//if (m_curY > 3.f)
+		//m_curY = 0.f;
 	}
 
 	UpdateCollision();
@@ -146,7 +203,7 @@ void ScnMgr::Shoot(int direct)
 	bvX += vx;
 	bvY += vy;
 
-	AddObject(x, y, z, bvX, bvY, 0.2f, 0.2f, KIND_BULLET, 1, STATE_GROUND);
+	AddObject(x, y, z, bvX, bvY, 0.1f, 0.1f, KIND_BULLET, 1, STATE_GROUND);
 	m_Sound->PlaySound(m_SoundFire, false, 1);
 }
 
@@ -183,7 +240,7 @@ void ScnMgr::AddObject(float x, float y, float z, float vx, float vy, float m_wi
 		m_Object[index]->set_ax(0);
 		m_Object[index]->set_ay(0);
 		m_Object[index]->set_kind(m_kind);
-		m_Object[index]->set_health(1);
+		m_Object[index]->set_health(health);
 		m_Object[index]->set_state(state);
 	}
 	//cout << m_kind << endl;
@@ -226,8 +283,8 @@ void ScnMgr::DoGarbageCollect()
 			continue;
 		}
 
-		// Check Outofbounce
-		if (px < -2.5f || px > 2.5f || py < -2.5f || py > 2.5f) {
+		// Check Outofbounce  1000 5 // 960 540 
+		if (px < -4.8f || px > 4.8f || py < -2.7f || py > 2.7f) {
 			if (m_kind == KIND_BULLET) {
 				cout << "Check Outofbounce - " << i << endl;
 				DeleteObject(i);
@@ -275,18 +332,18 @@ void ScnMgr::UpdateCollision()
 
 				if (RRCollision(a_minX, a_MaxX, a_minY, a_MaxY,b_minX, b_MaxX, b_minY, b_MaxY ))
 				{
-					int isBuilding, iHealth;
-					m_Object[i]->get_kind(&isBuilding);
+					int kind, iHealth;
+					m_Object[i]->get_kind(&kind);
 					m_Object[i]->get_health(&iHealth);
 
-					if (isBuilding == KIND_BUILDING) {
+					if (kind == KIND_BUILDING) {
 						//cout << "Building Check" << endl;
-						m_Object[i]->set_r(0.1*(rand() % 10));
-						m_Object[i]->set_g(0.1*(rand() % 10));
-						m_Object[i]->set_b(0.1*(rand() % 10));
+						m_Object[i]->set_r(0.01*(rand() % 100));
+						m_Object[i]->set_g(0.01*(rand() % 100));
+						m_Object[i]->set_b(0.01*(rand() % 100));
 					}
 					m_Object[j]->set_health(--iHealth);
-					cout << iHealth << endl;
+					//cout << iHealth << endl;
 				}
 			}
 		}

@@ -140,7 +140,7 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(800, 800);
+	glutInitWindowSize(960, 540);
 	glutCreateWindow("Game Software Engineering KPU");
 
 	glewInit();

@@ -11,6 +11,9 @@ class ScnMgr
 	int m_rad = 0;
 	int m_oldTime;
 	GLuint m_texIssac;
+	GLuint m_texExplosion;
+	GLuint m_texMonster;
+	GLuint m_texCard;
 
 	Sound *m_Sound = NULL;
 	int m_SoundBG = 0;
@@ -20,7 +23,11 @@ class ScnMgr
 	Object *m_Object[MAX_OBJECT] = { nullptr };
 
 	int FindEmptySlot();
-		
+
+	float m_curX = 0.f;
+	float m_curY = 0.f;
+	
+	float spawnfrequency = 0.f;
 public:
 	ScnMgr();
 	~ScnMgr();
@@ -31,6 +38,7 @@ public:
 	
 	void UpdateCollision();
 	bool RRCollision(float a_minX, float a_maxX, float a_minY, float a_maxY, float b_minX, float b_maxX, float b_minY, float b_maxY);
+	void CardSpawn(float eTime);
 
 	void ApplyForce(float fx, float fy, float fz, float eTime);
 	void Shoot(int direct);
