@@ -46,6 +46,8 @@ ScnMgr::~ScnMgr()
 {
 	m_Renderer->DeleteTexture(m_texIssac);
 	m_Renderer->DeleteTexture(m_texExplosion);
+	m_Renderer->DeleteTexture(m_texMonster);
+	m_Renderer->DeleteTexture(m_texCard);
 	delete m_Renderer;
 	for (int i = 0; i < MAX_OBJECT; i++)
 	{
@@ -116,7 +118,7 @@ void ScnMgr::RenderScene()
 	}
 }
 
-void ScnMgr::CardSpawn(float eTime) {
+void ScnMgr::CardSpawn() {
 	float x, y, z;
 	float vx, vy, vz;
 	float tx, ty;
@@ -136,26 +138,45 @@ void ScnMgr::CardSpawn(float eTime) {
 		}
 	}
 
-	//cout << "x : " << x << "// y : " << y << endl;
-
 	AddObject(x, y, z, bvX, bvY, 0.5f, 0.5f, KIND_CARD, health, STATE_GROUND);
 }
 
 void ScnMgr::Update(float eTime)
 {
+	float object_vx, object_vy, object_vz;
+	float object_px, object_py, object_pz;
+	float hero_px, hero_py, hero_pz;
+	int object_kind;
+	float amount = 50;
+
+
 	spawnfrequency += eTime;
 	if (spawnfrequency > 3) {
 		cout << spawnfrequency << endl;
-		CardSpawn(eTime);
+		CardSpawn();
 		spawnfrequency = 0;
 	}
 
+	m_Object[HERO_ID]->get_pos(&hero_px, &hero_py, &hero_pz);
+
 	for (int i = 0; i < MAX_OBJECT; i++)
 	{
-		if (m_Object[i] != nullptr)
+		if (m_Object[i] != nullptr) {
 			m_Object[i]->Update(eTime);
+
+			m_Object[i]->get_kind(&object_kind);
+			if (object_kind == KIND_CARD) {
+				m_Object[i]->get_vel(&object_vx, &object_vy, &object_vz);
+				m_Object[i]->get_pos(&object_px, &object_py, &object_pz);
+
+				m_Object[i]->set_vx((hero_px - object_px) * eTime * amount);
+				m_Object[i]->set_vy((hero_py - object_py) * eTime * amount);
+				m_Object[i]->set_vz((hero_pz - object_pz) * eTime * amount);
+			}
+		}
 	}
 
+	// SpriteImage
 	m_curX += eTime * 10.f;
 	if (m_curX > 14.f)
 	{

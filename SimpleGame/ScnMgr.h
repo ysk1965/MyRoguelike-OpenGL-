@@ -38,7 +38,7 @@ public:
 	
 	void UpdateCollision();
 	bool RRCollision(float a_minX, float a_maxX, float a_minY, float a_maxY, float b_minX, float b_maxX, float b_minY, float b_maxY);
-	void CardSpawn(float eTime);
+	void CardSpawn();
 
 	void ApplyForce(float fx, float fy, float fz, float eTime);
 	void Shoot(int direct);
