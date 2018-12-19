@@ -140,7 +140,11 @@ void SpecialKeyDownInput(int key, int x, int y)
 	case GLUT_KEY_RIGHT:
 		shoot = SHOOT_RIGHT;
 		scn->Shoot(shoot);
+		scn->SceneChange();
 		break;
+	case GLUT_ENTERED:
+		scn->SceneChange();
+		cout << "EnterKey" << endl;
 	}
 
 	RenderScene();

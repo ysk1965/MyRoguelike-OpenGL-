@@ -34,7 +34,7 @@ ScnMgr::ScnMgr()
 	m_Object[HERO_ID]->set_mass(1.f);
 	m_Object[HERO_ID]->set_kind(KIND_HERO);
 
-	m_texIssac = m_Renderer->CreatePngTexture("issac.png");
+	m_mainUI = m_Renderer->CreatePngTexture("MainUI.png");
 	m_texExplosion = m_Renderer->CreatePngTexture("explosion.png");
 	m_texMonster = m_Renderer->CreatePngTexture("monster.png");
 	m_texCard = m_Renderer->CreatePngTexture("card.png");
@@ -58,7 +58,7 @@ ScnMgr::ScnMgr()
 
 ScnMgr::~ScnMgr()
 {
-	m_Renderer->DeleteTexture(m_texIssac);
+	m_Renderer->DeleteTexture(m_mainUI);
 	m_Renderer->DeleteTexture(m_texExplosion);
 	m_Renderer->DeleteTexture(m_texMonster);
 	m_Renderer->DeleteTexture(m_texCard);
@@ -66,6 +66,40 @@ ScnMgr::~ScnMgr()
 	for (int i = 0; i < MAX_OBJECT; i++)
 	{
 		DeleteObject(i);
+	}
+}
+
+void ScnMgr::SceneInit()
+{
+	isUIScene = true;
+	int kind;
+	killscore = 0;
+	m_Object[HERO_ID]->set(0.f, 0.f, 0.5f, 0.5f, 1.f, 1.f, 1.f, 1.f);
+
+	for (int i = 0; i < MAX_OBJECT; i++) {
+		//if (m_Object[HERO_ID]) continue;
+		if (m_Object[i] != nullptr)
+		{
+			m_Object[i]->get_kind(&kind);
+			if (kind == KIND_CARD || kind == KIND_BULLET) {
+				//cout << "???" << endl;
+
+				delete m_Object[i];
+				m_Object[i] = nullptr;
+			}
+		}
+
+		m_Renderer->DrawTextureRectSeqXY(0, 0, 0.f,
+			RENDERER_W, RENDERER_H,
+			1.f, 1.f, 1.f, 1.f
+			, m_mainUI, 0, 0, 1.f, 1.f); // ¿ìÇÏ´Ü
+	}
+}
+
+void ScnMgr::SceneChange()
+{
+	if (isUIScene) {
+		isUIScene = false;
 	}
 }
 
@@ -97,89 +131,96 @@ void ScnMgr::RenderScene()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(killscore / 100.f, killscore / 100.f, killscore / 100.f, 1.0f);
 
-	UIScene();
-	// Renderer Test
+	if (isUIScene) {
+		SceneInit();
+	}
+	else {
+		UIScene();
+		// Renderer Test
 
-	float x, y, z;
-	float w, h;
-	float r, g, b, a;
-	float tx, ty;
-	int state = STATE_GROUND;
-	int kind;
+		float x, y, z;
+		float w, h;
+		float r, g, b, a;
+		float tx, ty;
+		int state = STATE_GROUND;
+		int kind;
 
-	m_Object[HERO_ID]->get_pos(&x, &y, &z);
-	m_Object[HERO_ID]->get_size(&w, &h);
-	m_Object[HERO_ID]->get_color(&r, &g, &b, &a);
-	m_Object[HERO_ID]->get_state(&state);
+		m_Object[HERO_ID]->get_pos(&x, &y, &z);
+		m_Object[HERO_ID]->get_size(&w, &h);
+		m_Object[HERO_ID]->get_color(&r, &g, &b, &a);
+		m_Object[HERO_ID]->get_state(&state);
 
-	float newX, newY, newZ, newW, newH;
-	newX = x * 100;
-	newY = y * 100;
-	newZ = z * 1;
-	newW = w * 200;
-	newH = h * 200;
-	m_Renderer->SetCameraCenterPos(newX, newY);
-
-
-
-	//m_Renderer->DrawTextureRectHeight(newX, newY, 0, newW, newH, r, g, b, a, m_texIssac, newZ);
-	m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texMonster, m_curX, 0, 5.0f, 5.0f);
-
-	//m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW/2, newH/2, r, g, b, a, m_texExplosion, m_curX, m_curY, 9.0f, 9.0f);
+		float newX, newY, newZ, newW, newH;
+		newX = x * 100;
+		newY = y * 100;
+		newZ = z * 1;
+		newW = w * 200;
+		newH = h * 200;
+		m_Renderer->SetCameraCenterPos(newX, newY);
 
 
-	for (int i = 0; i < MAX_OBJECT; i++)
-	{
-		if( i == HERO_ID);
-		else if (m_Object[i] != nullptr)
+
+		//m_Renderer->DrawTextureRectHeight(newX, newY, 0, newW, newH, r, g, b, a, m_texIssac, newZ);
+		m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texMonster, m_curX, 0, 5.0f, 5.0f);
+
+		//m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW/2, newH/2, r, g, b, a, m_texExplosion, m_curX, m_curY, 9.0f, 9.0f);
+
+
+		for (int i = 0; i < MAX_OBJECT; i++)
 		{
-			m_Object[i]->get_pos(&x, &y, &z);
-			m_Object[i]->get_size(&w, &h);
-			m_Object[i]->get_color(&r, &g, &b, &a);
-			m_Object[i]->get_kind(&kind);
-			m_Object[i]->get_tex(&tx, &ty);
+			if (i == HERO_ID);
+			else if (m_Object[i] != nullptr)
+			{
+				m_Object[i]->get_pos(&x, &y, &z);
+				m_Object[i]->get_size(&w, &h);
+				m_Object[i]->get_color(&r, &g, &b, &a);
+				m_Object[i]->get_kind(&kind);
+				m_Object[i]->get_tex(&tx, &ty);
 
-			newX = x * 100;
-			newY = y * 100;
-			newZ = z * 100;
+				newX = x * 100;
+				newY = y * 100;
+				newZ = z * 100;
 
-			newW = w * 100;
-			newH = h * 100;
+				newW = w * 100;
+				newH = h * 100;
 
-			if (kind == KIND_CARD) {
-				m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, tx, ty, 14.0f, 5.0f);
-			}
-			else if (kind == KIND_BUILDING) {
-				m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, r, g, b, a);
-			}
-			else if (kind == KIND_BULLET) {
-				m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f);
+				if (kind == KIND_CARD) {
+					m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, tx, ty, 14.0f, 5.0f);
+				}
+				else if (kind == KIND_BUILDING) {
+					m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, r, g, b, a);
+				}
+				else if (kind == KIND_BULLET) {
+					m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f);
+				}
 			}
 		}
 	}
 }
 
 void ScnMgr::CardSpawn() {
-	float x, y, z;
-	float vx, vy, vz;
-	float tx, ty;
-	float bvX = 0.f, bvY = 0.f;
-	int health = 2;
-	float hx, hy, hz; // hero
+	if (!isUIScene) {
+		float x, y, z;
+		float vx, vy, vz;
+		float tx, ty;
+		float bvX = 0.f, bvY = 0.f;
+		int health = 2;
+		float hx, hy, hz; // hero
 
-	m_Object[HERO_ID]->get_pos(&hx, &hy, &hz);
-	
-	while (true) {
-		
-		x = rand() % 960 * 0.01f - 4.80f;
-		y = rand() % 540 * 0.01f - 2.70f;
-		z = 0;
-		if (sqrt((hx - x)*(hx - x) + (hy - y) * (hy - y)) > 1) {
-			break;
+		m_Object[HERO_ID]->get_pos(&hx, &hy, &hz);
+
+		while (true) {
+
+			x = rand() % 960 * 0.01f - 4.80f;
+			y = rand() % 540 * 0.01f - 2.70f;
+			z = 0;
+			if (sqrt((hx - x)*(hx - x) + (hy - y) * (hy - y)) > 1) {
+				break;
+			}
 		}
-	}
 
-	AddObject(x, y, z, bvX, bvY, 0.5f, 0.5f, KIND_CARD, health, STATE_GROUND);
+		AddObject(x, y, z, bvX, bvY, 0.5f, 0.5f, KIND_CARD, health, STATE_GROUND);
+	}
 }
 
 void ScnMgr::Update(float eTime)
@@ -270,28 +311,30 @@ void ScnMgr::ApplyForce(float fx, float fy, float fz, float eTime)
 
 void ScnMgr::Shoot(int direct)
 {
-	float x, y, z;
-	float vx, vy, vz;
-	float bvX = 0.f, bvY = 0.f;
-	float amount = 5.f;
-	
-	if (direct == SHOOT_UP)
-		bvY += amount;
-	else if (direct == SHOOT_DOWN)
-		bvY -= amount;
-	else if (direct == SHOOT_LEFT)
-		bvX -= amount;
-	else if (direct == SHOOT_RIGHT)
-		bvX += amount;
+	if (!isUIScene) {
+		float x, y, z;
+		float vx, vy, vz;
+		float bvX = 0.f, bvY = 0.f;
+		float amount = 5.f;
 
-	m_Object[HERO_ID]->get_pos(&x, &y, &z);
-	m_Object[HERO_ID]->get_vel(&vx, &vy, &vz);
+		if (direct == SHOOT_UP)
+			bvY += amount;
+		else if (direct == SHOOT_DOWN)
+			bvY -= amount;
+		else if (direct == SHOOT_LEFT)
+			bvX -= amount;
+		else if (direct == SHOOT_RIGHT)
+			bvX += amount;
 
-	bvX += vx;
-	bvY += vy;
+		m_Object[HERO_ID]->get_pos(&x, &y, &z);
+		m_Object[HERO_ID]->get_vel(&vx, &vy, &vz);
 
-	AddObject(x, y, z, bvX, bvY, 0.3f, 0.3f, KIND_BULLET, 1, STATE_GROUND);
-	m_Sound->PlaySound(m_SoundFire, false, 1);
+		bvX += vx;
+		bvY += vy;
+
+		AddObject(x, y, z, bvX, bvY, 0.3f, 0.3f, KIND_BULLET, 1, STATE_GROUND);
+		m_Sound->PlaySound(m_SoundFire, false, 1);
+	}
 }
 
 void ScnMgr::ShootChange(int change)
@@ -446,7 +489,6 @@ void ScnMgr::DoGarbageCollect()
 		}
 	}
 }
-
 
 bool ScnMgr::RRCollision(float a_minX, float a_maxX, float a_minY, float a_maxY, float b_minX, float b_maxX, float b_minY, float b_maxY)
 {

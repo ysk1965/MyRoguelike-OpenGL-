@@ -10,7 +10,7 @@ class ScnMgr
 	Renderer *m_Renderer = NULL;
 	int m_rad = 0;
 	int m_oldTime;
-	GLuint m_texIssac;
+	GLuint m_mainUI;
 	GLuint m_texExplosion;
 	GLuint m_texMonster;
 	GLuint m_texCard;
@@ -34,6 +34,8 @@ class ScnMgr
 	int killscore = 0;
 	
 	float spawnfrequency = 0.f;
+
+	bool isUIScene = true;
 public:
 	ScnMgr();
 	~ScnMgr();
@@ -57,5 +59,8 @@ public:
 	void DeleteObject(int id);
 
 	void DoGarbageCollect();
+
+	void SceneInit();
+	void SceneChange();
 };
 
