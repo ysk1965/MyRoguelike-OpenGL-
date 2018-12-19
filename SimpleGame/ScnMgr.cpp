@@ -7,7 +7,7 @@ ScnMgr::ScnMgr()
 	for (Object* obj:m_Object)
 		obj = nullptr;
 
-	m_Renderer = new Renderer(960, 540);
+	m_Renderer = new Renderer(RENDERER_W, RENDERER_H);
 	if (!m_Renderer->IsInitialized())
 	{
 		std::cout << "Renderer could not be initialized.. \n";
@@ -17,6 +17,8 @@ ScnMgr::ScnMgr()
 	m_SoundBG = m_Sound->CreateSound("./Sound/Sketch3.wav");
 	m_SoundFire = m_Sound->CreateSound("./Sound/Shoot.wav");
 	m_SoundExplosion = m_Sound->CreateSound("./Sound/Explosion.wav");
+	m_SoundHit = m_Sound->CreateSound("./Sound/Hit.wav");
+	m_SoundDeleteCard = m_Sound->CreateSound("./Sound/DeleteCard.wav");
 
 	m_Sound->PlaySound(m_SoundBG, true, 1);
 
@@ -39,6 +41,7 @@ ScnMgr::ScnMgr()
 
 	// Add Building
 	AddObject(1.f, 0.f, 0.f, 0.f, 0.f, 0.5f, 0.5f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
+	//AddObject(4.8f, 2.7f, 0.f, 0.f, 0.f, 1.0f, 1.0f, KIND_UI, 10, STATE_GROUND); // 수정필요
 }
 
 
@@ -55,11 +58,20 @@ ScnMgr::~ScnMgr()
 	}
 }
 
+void ScnMgr::UIScene() {
+	// 내가 갖고 있는 카드
+	m_Renderer->DrawTextureRectSeqXY((RENDERER_W/2) - 100, -(RENDERER_H/2) + 100, 1.f,
+		130.f, 130.f,
+		1.f, 1.f, 1.f, 1.f
+		, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f);
+}
+
 void ScnMgr::RenderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(killscore / 100.f, killscore / 100.f, killscore / 100.f, 1.0f);
 
+	UIScene();
 	// Renderer Test
 
 	float x, y, z;
@@ -78,8 +90,8 @@ void ScnMgr::RenderScene()
 	newX = x * 100;
 	newY = y * 100;
 	newZ = z * 1;
-	newW = w * 300;
-	newH = h * 300;
+	newW = w * 200;
+	newH = h * 200;
 
 	//m_Renderer->DrawTextureRectHeight(newX, newY, 0, newW, newH, r, g, b, a, m_texIssac, newZ);
 	m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texMonster, m_curX, m_curY, 5.0f, 5.0f);
@@ -112,7 +124,8 @@ void ScnMgr::RenderScene()
 				m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, r, g, b, a);
 			}
 			else if (kind == KIND_BULLET) {
-				m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texExplosion, m_curX, m_curY, 9.0f, 9.0f);
+				m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f);
+				//m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texExplosion, m_curX, m_curY, 9.0f, 9.0f);
 			}
 		}
 	}
@@ -146,16 +159,32 @@ void ScnMgr::Update(float eTime)
 	float object_vx, object_vy, object_vz;
 	float object_px, object_py, object_pz;
 	float hero_px, hero_py, hero_pz;
+	float bullet_sw, bullet_sh;
 	int object_kind;
-	float amount = 50;
-
-
-	spawnfrequency += eTime;
-	if (spawnfrequency > 3) {
-		cout << spawnfrequency << endl;
-		CardSpawn();
-		spawnfrequency = 0;
+	float amount = 50.f;
+	static int spawn_cnt = 0;
+	
+	if (spawnfrequency > 1.f && bfrequency == true) { // 1이 빈도 수 조절
+		spawn_cnt++;
+		if (spawn_cnt % 2 == 0) {
+			CardSpawn();
+		}
+		bfrequency = false;
 	}
+
+	if (spawnfrequency < -1.f && bfrequency == false) {
+		//CardSpawn();
+		bfrequency = true;
+	}
+
+	if (bfrequency == true) {
+		spawnfrequency += eTime*3;
+	}
+	else {
+		spawnfrequency -= eTime*3;
+	}
+
+	//cout << spawnfrequency << endl;
 
 	m_Object[HERO_ID]->get_pos(&hero_px, &hero_py, &hero_pz);
 
@@ -173,7 +202,12 @@ void ScnMgr::Update(float eTime)
 				m_Object[i]->set_vy((hero_py - object_py) * eTime * amount);
 				m_Object[i]->set_vz((hero_pz - object_pz) * eTime * amount);
 			}
-		}
+			else if (object_kind == KIND_BULLET) {
+				m_Object[i]->get_size(&bullet_sw, &bullet_sh);
+				m_Object[i]->set_w(0.3 + spawnfrequency/15);
+				m_Object[i]->set_h(0.3 + spawnfrequency/15);
+			}
+ 		}
 	}
 
 	// SpriteImage
@@ -230,6 +264,34 @@ void ScnMgr::Shoot(int direct)
 
 	AddObject(x, y, z, bvX, bvY, 0.3f, 0.3f, KIND_BULLET, 1, STATE_GROUND);
 	m_Sound->PlaySound(m_SoundFire, false, 1);
+}
+
+void ScnMgr::ShootChange(int change)
+{
+	if (change == CARD_SPADE)
+		m_attackcard = CARD_SPADE;
+	else if (change == CARD_DIAMOND)
+		m_attackcard = CARD_DIAMOND;
+	else if (change == CARD_HEART)
+		m_attackcard = CARD_HEART;
+	else if (change == CARD_CLOVER)
+		m_attackcard = CARD_CLOVER;
+}
+
+void ScnMgr::SpaceBarChange()
+{
+	if (m_attackcard == CARD_CLOVER) {
+		m_attackcard = CARD_SPADE;
+	}
+	else if (m_attackcard == CARD_SPADE) {
+		m_attackcard = CARD_DIAMOND;
+	}
+	else if (m_attackcard == CARD_DIAMOND) {
+		m_attackcard = CARD_HEART;
+	}
+	else if (m_attackcard == CARD_HEART) {
+		m_attackcard = CARD_CLOVER;
+	}
 }
 
 int ScnMgr::FindEmptySlot()
@@ -315,12 +377,15 @@ void ScnMgr::DoGarbageCollect()
 		// Check Health
 		if (health <= 0 && (m_kind == KIND_BULLET || m_kind == KIND_BUILDING || m_kind == KIND_CARD)) {
 			cout << "Check Health - " << i << "[" << health << "]" <<endl;
+			if (m_kind == KIND_CARD) {
+				killscore++;
+			}
 			DeleteObject(i);
 			continue;
 		}
 
 		// Check Outofbounce  1000 5 // 960 540 
-		if (px < -4.8f || px > 4.8f || py < -2.7f || py > 2.7f) {
+		if (px < -(RENDERER_W/200.f) || px >(RENDERER_W / 200.f) || py < -(RENDERER_H / 200.f) || py >(RENDERER_H / 200.f)) {
 			if (m_kind == KIND_BULLET) {
 				cout << "Check Outofbounce - " << i << endl;
 				DeleteObject(i);
@@ -390,8 +455,11 @@ void ScnMgr::UpdateCollision()
 						else if (kind_J == KIND_CARD) {
 							m_Object[j]->get_tex(&tx, &ty);
 
+							if (ty != m_attackcard) break;
+
 							m_Object[j]->set_tex(--tx, ty);
 							m_Object[j]->set_health(--health_J);
+							m_Sound->PlaySound(m_SoundHit, false, 1);
 							cout << "health : " << health_J << endl;
 						}
 					}
@@ -407,8 +475,11 @@ void ScnMgr::UpdateCollision()
 						else if (kind_I == KIND_CARD) {
 							m_Object[i]->get_tex(&tx, &ty);
 
+							if (ty != m_attackcard) break;
+
 							m_Object[i]->set_tex(--tx, ty);
 							m_Object[i]->set_health(--health_I);
+							m_Sound->PlaySound(m_SoundHit, false, 1);
 							cout << "health : " << health_I << endl;
 						}
 					}

@@ -49,8 +49,10 @@ void RenderScene(void)
 		fy -= FORCE;
 	if (keyD)
 		fx += FORCE;
-	if (keySP)
+	if (keySP) {
 		fz += FORCE / 2;
+		//scn->SpaceBarChange();
+	}
 	scn->ApplyForce(fx, fy, fz, eTime);
 
 	scn->Update(eTime);
@@ -80,7 +82,24 @@ void KeyDownInput(unsigned char key, int x, int y)
 	if (key == 'd' || key == 'D')
 		keyD = true;
 	if (key == ' ') 
+		scn->SpaceBarChange();
 		keySP = true;
+
+	switch (key)
+	{
+	case '1':
+		scn->ShootChange(CARD_SPADE);
+		break;
+	case '2':
+		scn->ShootChange(CARD_DIAMOND);
+		break;
+	case '3':
+		scn->ShootChange(CARD_HEART);
+		break;
+	case '4':
+		scn->ShootChange(CARD_CLOVER);
+		break;
+	}
 	
 
 	RenderScene();
@@ -140,7 +159,7 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(960, 540);
+	glutInitWindowSize(RENDERER_W, RENDERER_H);
 	glutCreateWindow("Game Software Engineering KPU");
 
 	glewInit();

@@ -19,18 +19,26 @@ class ScnMgr
 	int m_SoundBG = 0;
 	int m_SoundFire = 0;
 	int m_SoundExplosion = 0;
+	int m_SoundHit = 0;
+	int m_SoundDeleteCard = 0;
 
+	bool bfrequency = true;
 	Object *m_Object[MAX_OBJECT] = { nullptr };
 
 	int FindEmptySlot();
 
 	float m_curX = 0.f;
 	float m_curY = 0.f;
+
+	int m_attackcard = 0;
+	int killscore = 0;
 	
 	float spawnfrequency = 0.f;
 public:
 	ScnMgr();
 	~ScnMgr();
+
+	void UIScene();
 
 	void RenderScene();
 
@@ -42,6 +50,8 @@ public:
 
 	void ApplyForce(float fx, float fy, float fz, float eTime);
 	void Shoot(int direct);
+	void ShootChange(int change);
+	void SpaceBarChange();
 
 	void AddObject(float x, float y, float z, float vx, float vy, float m_width, float m_height, int m_kind, int health, int state);
 	void DeleteObject(int id);
