@@ -23,6 +23,9 @@ class ScnMgr
 	int m_SoundDeleteCard = 0;
 	int m_SoundStart = 0;
 	int m_SoundLevelup = 0;
+	int m_SoundHitmiss = 0;
+	int m_SoundDie = 0;
+	int m_SoundItem = 0;
 
 	bool bfrequency = true;
 	Object *m_Object[MAX_OBJECT] = { nullptr };
@@ -35,8 +38,11 @@ class ScnMgr
 	int m_attackcard = 0;
 	int killscore = 0;
 
+	float event_time = 0.f;
+
 	bool isUIScene = true;
 	bool isHit = false;
+	bool isEvent = false;
 	
 	//level
 	int current_level = 0;
@@ -58,6 +64,7 @@ public:
 	void UpdateCollision();
 	bool RRCollision(float a_minX, float a_maxX, float a_minY, float a_maxY, float b_minX, float b_maxX, float b_minY, float b_maxY);
 	void CardSpawn();
+	void EventCardSpawn();
 
 	void ApplyForce(float fx, float fy, float fz, float eTime);
 	void Shoot(int direct);

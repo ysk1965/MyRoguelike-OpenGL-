@@ -18,9 +18,12 @@ ScnMgr::ScnMgr()
 	m_SoundFire = m_Sound->CreateSound("./Sound/Shoot.wav");
 	m_SoundHplose = m_Sound->CreateSound("./Sound/Explosion.wav");
 	m_SoundHit = m_Sound->CreateSound("./Sound/Hit.wav");
+	m_SoundHitmiss = m_Sound->CreateSound("./Sound/Hitmiss.mp3");
 	m_SoundDeleteCard = m_Sound->CreateSound("./Sound/DeleteCard.wav");
 	m_SoundStart = m_Sound->CreateSound("./Sound/start.wav");
 	m_SoundLevelup = m_Sound->CreateSound("./Sound/LevelUp.wav");
+	m_SoundDie = m_Sound->CreateSound("./Sound/LevelUp.wav");
+	m_SoundItem = m_Sound->CreateSound("./Sound/Item.wav");
 
 	m_Sound->PlaySound(m_SoundBG, true, 1);
 
@@ -85,8 +88,6 @@ void ScnMgr::SceneInit()
 		{
 			m_Object[i]->get_kind(&kind);
 			if (kind == KIND_CARD || kind == KIND_BULLET) {
-				//cout << "???" << endl;
-
 				delete m_Object[i];
 				m_Object[i] = nullptr;
 			}
@@ -96,12 +97,6 @@ void ScnMgr::SceneInit()
 			1.f, 1.f, 1.f, 1.f
 			, m_mainUI, 0, 0, 1.f, 1.f); // 우하단
 		m_Renderer->SetCameraCenterPos(0, 0);
-		//m_Sound->PlaySound(m_SoundStart, false, 1);
-
-		//m_Renderer->DrawTextureRect(0, 0, 0.f,
-		//	RENDERER_W, RENDERER_H,
-		//	1.f, 1.f, 1.f, 1.f
-		//	, m_mainUI);
 	}
 }
 
@@ -115,32 +110,57 @@ void ScnMgr::SceneChange()
 }
 
 void ScnMgr::UIScene() {
-	// 내가 갖고 있는 카드
-	m_Renderer->DrawTextureRectSeqXY((RENDERER_W/2) - 100, -(RENDERER_H/2) + 100, 1.f,
-		130.f, 130.f,
-		1.f, 1.f, 1.f, 1.f
-		, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f); // 우하단
+	if (isEvent) {
+		// 내가 갖고 있는 카드
+		m_Renderer->DrawTextureRectSeqXY((RENDERER_W / 2) - 100, -(RENDERER_H / 2) + 100, 1.f,
+			130.f, 130.f,
+			1.f, 1.f, 1.f, 1.f
+			, m_texCard, 0, 4, 14.0f, 5.0f); // 우하단
 
-	m_Renderer->DrawTextureRectSeqXY(-(RENDERER_W / 2) + 100, -(RENDERER_H / 2) + 100, 1.f,
-		130.f, 130.f,
-		1.f, 1.f, 1.f, 1.f
-		, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f); // 좌하단
+		m_Renderer->DrawTextureRectSeqXY(-(RENDERER_W / 2) + 100, -(RENDERER_H / 2) + 100, 1.f,
+			130.f, 130.f,
+			1.f, 1.f, 1.f, 1.f
+			, m_texCard, 0, 4, 14.0f, 5.0f); // 좌하단
 
-	m_Renderer->DrawTextureRectSeqXY(-(RENDERER_W / 2) + 100, (RENDERER_H / 2) - 100, 1.f,
-		130.f, 130.f,
-		1.f, 1.f, 1.f, 1.f
-		, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f); // 좌상단
+		m_Renderer->DrawTextureRectSeqXY(-(RENDERER_W / 2) + 100, (RENDERER_H / 2) - 100, 1.f,
+			130.f, 130.f,
+			1.f, 1.f, 1.f, 1.f
+			, m_texCard, 0, 4, 14.0f, 5.0f); // 좌상단
 
-	m_Renderer->DrawTextureRectSeqXY((RENDERER_W / 2) - 100, (RENDERER_H / 2) - 100, 1.f,
-		130.f, 130.f,
-		1.f, 1.f, 1.f, 1.f
-		, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f); // 우상단
+		m_Renderer->DrawTextureRectSeqXY((RENDERER_W / 2) - 100, (RENDERER_H / 2) - 100, 1.f,
+			130.f, 130.f,
+			1.f, 1.f, 1.f, 1.f
+			, m_texCard, 0, 4, 14.0f, 5.0f); // 우상단
+	}
+	else {
+		// 내가 갖고 있는 카드
+		m_Renderer->DrawTextureRectSeqXY((RENDERER_W / 2) - 100, -(RENDERER_H / 2) + 100, 1.f,
+			130.f, 130.f,
+			1.f, 1.f, 1.f, 1.f
+			, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f); // 우하단
+
+		m_Renderer->DrawTextureRectSeqXY(-(RENDERER_W / 2) + 100, -(RENDERER_H / 2) + 100, 1.f,
+			130.f, 130.f,
+			1.f, 1.f, 1.f, 1.f
+			, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f); // 좌하단
+
+		m_Renderer->DrawTextureRectSeqXY(-(RENDERER_W / 2) + 100, (RENDERER_H / 2) - 100, 1.f,
+			130.f, 130.f,
+			1.f, 1.f, 1.f, 1.f
+			, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f); // 좌상단
+
+		m_Renderer->DrawTextureRectSeqXY((RENDERER_W / 2) - 100, (RENDERER_H / 2) - 100, 1.f,
+			130.f, 130.f,
+			1.f, 1.f, 1.f, 1.f
+			, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f); // 우상단
+	}
+
 }
 
 void ScnMgr::RenderScene(float eTime)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(killscore / 45.f, killscore / 45.f, killscore / 45.f, 1.0f);
+	glClearColor(1 - killscore / 45.f + event_time / 10, 1 - killscore / 45.f + event_time / 10, 1 - killscore / 45.f, 1.0f - event_time / 10);
 
 	if (isUIScene) {
 		SceneInit();
@@ -301,7 +321,6 @@ void ScnMgr::RenderScene(float eTime)
 
 		//m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW/2, newH/2, r, g, b, a, m_texExplosion, m_curX, m_curY, 9.0f, 9.0f);
 
-
 		for (int i = 0; i < MAX_OBJECT; i++)
 		{
 			if (i == HERO_ID);
@@ -327,7 +346,22 @@ void ScnMgr::RenderScene(float eTime)
 					m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, r, g, b, a);
 				}
 				else if (kind == KIND_BULLET) {
-					m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f);
+					if (isEvent) {
+						if (event_time < 10) {
+							event_time += eTime;
+						}
+						else {
+							event_time = 0;
+							isEvent = false;
+						}
+						m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, 0, 4, 14.0f, 5.0f);
+					}
+					else {
+						m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f);
+					}
+				}
+				else if (kind == KIND_EVENTCARD) {
+					m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, 0, 4, 14.0f, 5.0f);
 				}
 			}
 		}
@@ -350,12 +384,37 @@ void ScnMgr::CardSpawn() {
 			x = rand() % 960 * 0.01f - 4.80f;
 			y = rand() % 540 * 0.01f - 2.70f;
 			z = 0;
-			if (sqrt((hx - x)*(hx - x) + (hy - y) * (hy - y)) > 1 + current_level * 0.05f) {
+			if (sqrt((hx - x)*(hx - x) + (hy - y) * (hy - y)) > 1 + current_level * 0.8f) {
 				break;
 			}
 		}
 
 		AddObject(x, y, z, bvX, bvY, 0.5f, 0.5f, KIND_CARD, health, STATE_GROUND);
+	}
+}
+
+void ScnMgr::EventCardSpawn() {
+	if (!isUIScene) {
+		float x, y, z;
+		float vx, vy, vz;
+		float tx, ty;
+		float bvX = 0.f, bvY = 0.f;
+		int health = 2;
+		float hx, hy, hz; // hero
+
+		m_Object[HERO_ID]->get_pos(&hx, &hy, &hz);
+
+		while (true) {
+
+			x = rand() % 960 * 0.01f - 4.80f;
+			y = rand() % 540 * 0.01f - 2.70f;
+			z = 0;
+			if (sqrt((hx - x)*(hx - x) + (hy - y) * (hy - y)) > 1 + current_level * 0.8f) {
+				break;
+			}
+		}
+
+		AddObject(x, y, z, bvX, bvY, 0.5f, 0.5f, KIND_EVENTCARD, health, STATE_GROUND);
 	}
 }
 
@@ -377,6 +436,9 @@ void ScnMgr::Update(float eTime)
 	}
 
 	if (spawnfrequency < -1.f && bfrequency == false) {
+		if (spawn_cnt % 12 == 0) {
+			EventCardSpawn();
+		}
 		//CardSpawn();
 		bfrequency = true;
 	}
@@ -593,7 +655,7 @@ void ScnMgr::DoGarbageCollect()
 		}
 
 		// Check Health
-		if (health <= 0 && (m_kind == KIND_BULLET || m_kind == KIND_BUILDING || m_kind == KIND_CARD)) {
+		if (health <= 0 && (m_kind == KIND_BULLET || m_kind == KIND_BUILDING || m_kind == KIND_CARD || m_kind == KIND_EVENTCARD)) {
 			cout << "Check Health - " << i << "[" << health << "]" <<endl;
 			if (m_kind == KIND_CARD) {
 				killscore++;
@@ -692,8 +754,14 @@ void ScnMgr::UpdateCollision()
 							isHit = true;
 							cout << health_J << endl;
 							if (health_J == 0) {
+								m_Sound->PlaySound(m_SoundDie, false, 1);
 								SceneInit();
 							}
+						}
+						else if (kind_I == KIND_EVENTCARD) {
+							m_Sound->PlaySound(m_SoundItem, false, 1);
+							m_Object[i]->set_health(0);
+							isEvent = true;
 						}
 					}
 					else if (kind_I == KIND_HERO) {
@@ -704,8 +772,14 @@ void ScnMgr::UpdateCollision()
 							isHit = true;
 							cout << health_I << endl;
 							if (health_I == 0) {
+								m_Sound->PlaySound(m_SoundDie, false, 1);
 								SceneInit();
 							}
+						}
+						else if (kind_J == KIND_EVENTCARD) {
+							m_Sound->PlaySound(m_SoundItem, false, 1);
+							m_Object[j]->set_health(0);
+							isEvent = true;
 						}
 					}
 
@@ -723,12 +797,23 @@ void ScnMgr::UpdateCollision()
 							m_Object[i]->set_health(--health_I); // bullet
 							m_Object[j]->get_tex(&tx, &ty);
 
-							if (ty != m_attackcard) break;
+							if (isEvent) {
+								m_Object[j]->set_tex(--tx, ty);
+								m_Object[j]->set_health(--health_J);
+								m_Sound->PlaySound(m_SoundHit, false, 1);
+								cout << "health : " << health_J << endl;
+							}
+							else {
+								if (ty != m_attackcard) {
+									m_Sound->PlaySound(m_SoundHitmiss, false, 1);
+									break;
+								}
 
-							m_Object[j]->set_tex(--tx, ty);
-							m_Object[j]->set_health(--health_J);
-							m_Sound->PlaySound(m_SoundHit, false, 1);
-							cout << "health : " << health_J << endl;
+								m_Object[j]->set_tex(--tx, ty);
+								m_Object[j]->set_health(--health_J);
+								m_Sound->PlaySound(m_SoundHit, false, 1);
+								cout << "health : " << health_J << endl;
+							}
 						}
 					}
 					if (kind_J == KIND_BULLET) {
@@ -745,12 +830,23 @@ void ScnMgr::UpdateCollision()
 							m_Object[j]->set_health(--health_J); // bullet
 							m_Object[i]->get_tex(&tx, &ty);
 
-							if (ty != m_attackcard) break;
+							if (isEvent) {
+								m_Object[i]->set_tex(--tx, ty);
+								m_Object[i]->set_health(--health_I);
+								m_Sound->PlaySound(m_SoundHit, false, 1);
+								cout << "health : " << health_I << endl;
+							}
+							else {
+								if (ty != m_attackcard) {
+									m_Sound->PlaySound(m_SoundHitmiss, false, 1);
+									break;
+								}
 
-							m_Object[i]->set_tex(--tx, ty);
-							m_Object[i]->set_health(--health_I);
-							m_Sound->PlaySound(m_SoundHit, false, 1);
-							cout << "health : " << health_I << endl;
+								m_Object[i]->set_tex(--tx, ty);
+								m_Object[i]->set_health(--health_I);
+								m_Sound->PlaySound(m_SoundHit, false, 1);
+								cout << "health : " << health_I << endl;
+							}
 						}
 					}
 				}

@@ -14,7 +14,8 @@
 #define KIND_BULLET 1
 #define KIND_BUILDING 2
 #define KIND_CARD 3
-#define KIND_UI 4
+#define KIND_EVENTCARD 4
+#define KIND_UI 5
 
 #define CARD_SPADE 2
 #define CARD_DIAMOND 1
