@@ -16,7 +16,7 @@ ScnMgr::ScnMgr()
 	m_Sound = new Sound();
 	m_SoundBG = m_Sound->CreateSound("./Sound/Sketch3.wav");
 	m_SoundFire = m_Sound->CreateSound("./Sound/Shoot.wav");
-	m_SoundExplosion = m_Sound->CreateSound("./Sound/Explosion.wav");
+	m_SoundHplose = m_Sound->CreateSound("./Sound/Explosion.wav");
 	m_SoundHit = m_Sound->CreateSound("./Sound/Hit.wav");
 	m_SoundDeleteCard = m_Sound->CreateSound("./Sound/DeleteCard.wav");
 	m_SoundStart = m_Sound->CreateSound("./Sound/start.wav");
@@ -34,6 +34,7 @@ ScnMgr::ScnMgr()
 	m_Object[HERO_ID]->set_ay(0.f);
 	m_Object[HERO_ID]->set_az(0.f);
 	m_Object[HERO_ID]->set_mass(1.f);
+	m_Object[HERO_ID]->set_health(3);
 	m_Object[HERO_ID]->set_kind(KIND_HERO);
 
 	m_mainUI = m_Renderer->CreatePngTexture("MainUI.png");
@@ -90,11 +91,17 @@ void ScnMgr::SceneInit()
 				m_Object[i] = nullptr;
 			}
 		}
-
 		m_Renderer->DrawTextureRectSeqXY(0, 0, 0.f,
 			RENDERER_W, RENDERER_H,
 			1.f, 1.f, 1.f, 1.f
 			, m_mainUI, 0, 0, 1.f, 1.f); // 우하단
+		m_Renderer->SetCameraCenterPos(0, 0);
+		//m_Sound->PlaySound(m_SoundStart, false, 1);
+
+		//m_Renderer->DrawTextureRect(0, 0, 0.f,
+		//	RENDERER_W, RENDERER_H,
+		//	1.f, 1.f, 1.f, 1.f
+		//	, m_mainUI);
 	}
 }
 
@@ -103,6 +110,7 @@ void ScnMgr::SceneChange()
 	if (isUIScene) {
 		m_Sound->PlaySound(m_SoundStart, false, 1);
 		isUIScene = false;
+		m_Object[HERO_ID]->set_health(3);
 	}
 }
 
@@ -129,7 +137,7 @@ void ScnMgr::UIScene() {
 		, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f); // 우상단
 }
 
-void ScnMgr::RenderScene()
+void ScnMgr::RenderScene(float eTime)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(killscore / 45.f, killscore / 45.f, killscore / 45.f, 1.0f);
@@ -141,7 +149,7 @@ void ScnMgr::RenderScene()
 		if (killscore < 5) {
 			if (current_level == 0) {
 				level_curX = 4.f;
-				level_speed = 100.0f;
+				level_speed = 90.0f;
 				level_frequency = 4;
 				m_Object[HERO_ID]->set_w(0.4f);
 				m_Object[HERO_ID]->set_h(0.4f);
@@ -165,7 +173,7 @@ void ScnMgr::RenderScene()
 		else if (killscore < 15) {
 			if (current_level == 2) {
 				level_curX = 8.f;
-				level_speed = 180.f;
+				level_speed = 190.f;
 				level_frequency = 3;
 				m_Object[HERO_ID]->set_w(0.6f);
 				m_Object[HERO_ID]->set_h(0.6f);
@@ -177,7 +185,7 @@ void ScnMgr::RenderScene()
 		else if (killscore < 20) {
 			if (current_level == 3) {
 				level_curX = 10.f;
-				level_speed = 220.f;
+				level_speed = 240.f;
 				level_frequency = 3;
 				m_Object[HERO_ID]->set_w(0.7f);
 				m_Object[HERO_ID]->set_h(0.7f);
@@ -189,7 +197,7 @@ void ScnMgr::RenderScene()
 		else if (killscore < 25) {
 			if (current_level == 4) {
 				level_curX = 12.f;
-				level_speed = 260.f;
+				level_speed = 290.f;
 				level_frequency = 3;
 				m_Object[HERO_ID]->set_w(0.8f);
 				m_Object[HERO_ID]->set_h(0.8f);
@@ -201,7 +209,7 @@ void ScnMgr::RenderScene()
 		else if (killscore < 30) {
 			if (current_level == 5) {
 				level_curX = 13.f;
-				level_speed = 300.f;
+				level_speed = 340.f;
 				level_frequency = 2;
 				m_Object[HERO_ID]->set_w(0.9f);
 				m_Object[HERO_ID]->set_h(0.9f);
@@ -213,7 +221,7 @@ void ScnMgr::RenderScene()
 		else if (killscore < 35) {
 			if (current_level == 6) {
 				level_curX = 14.f;
-				level_speed = 340.f;
+				level_speed = 390.f;
 				level_frequency = 2;
 				m_Object[HERO_ID]->set_w(1.0f);
 				m_Object[HERO_ID]->set_h(1.0f);
@@ -225,7 +233,7 @@ void ScnMgr::RenderScene()
 		else if (killscore < 40) {
 			if (current_level == 7) {
 				level_curX = 14.f;
-				level_speed = 380.f;
+				level_speed = 440.f;
 				level_frequency = 2;
 				m_Object[HERO_ID]->set_w(1.1f);
 				m_Object[HERO_ID]->set_h(1.1f);
@@ -237,7 +245,7 @@ void ScnMgr::RenderScene()
 		else if (killscore < 45) {
 			if (current_level == 8) {
 				level_curX = 14.f;
-				level_speed = 420.f;
+				level_speed = 490.f;
 				level_frequency = 1;
 				m_Object[HERO_ID]->set_w(1.1f);
 				m_Object[HERO_ID]->set_h(1.1f);
@@ -268,7 +276,25 @@ void ScnMgr::RenderScene()
 		newZ = z * 1;
 		newW = w * 50 + 25 * m_playersize;
 		newH = h * 50 + 25 * m_playersize;
-		m_Renderer->SetCameraCenterPos(newX, newY);
+
+		float cameraX, cameraY;
+		static float time = 0;
+		if (isHit) {
+			if (time < 1) {
+				time += eTime;
+			}
+			else {
+				isHit = false;
+				time = 0;
+			}
+			cameraX = rand() % 10;
+			cameraY = rand() % 10;
+		}
+		else {
+			cameraX = 0;
+			cameraY = 0;
+		}
+		m_Renderer->SetCameraCenterPos(newX + cameraX, newY + cameraY);
 
 		//m_Renderer->DrawTextureRectHeight(newX, newY, 0, newW, newH, r, g, b, a, m_texIssac, newZ);
 		m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texMonster, m_curX, 0, 5.0f, 5.0f);
@@ -659,17 +685,27 @@ void ScnMgr::UpdateCollision()
 
 					// Player Damege
 					if (kind_J == KIND_HERO) {
-						m_Object[j]->set_health(--health_J);
 						if (kind_I == KIND_CARD) {
+							m_Object[j]->set_health(--health_J);
+							m_Sound->PlaySound(m_SoundHplose, false, 1);
 							m_Object[i]->set_health(0);
-							cout << "Collision" << endl;
+							isHit = true;
+							cout << health_J << endl;
+							if (health_J == 0) {
+								SceneInit();
+							}
 						}
 					}
 					else if (kind_I == KIND_HERO) {
-						m_Object[i]->set_health(--health_I);
 						if (kind_J == KIND_CARD) {
+							m_Object[i]->set_health(--health_I);
+							m_Sound->PlaySound(m_SoundHplose, false, 1);
 							m_Object[j]->set_health(0);
-							cout << "Collision" << endl;
+							isHit = true;
+							cout << health_I << endl;
+							if (health_I == 0) {
+								SceneInit();
+							}
 						}
 					}
 

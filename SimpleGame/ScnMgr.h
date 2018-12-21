@@ -18,7 +18,7 @@ class ScnMgr
 	Sound *m_Sound = NULL;
 	int m_SoundBG = 0;
 	int m_SoundFire = 0;
-	int m_SoundExplosion = 0;
+	int m_SoundHplose = 0;
 	int m_SoundHit = 0;
 	int m_SoundDeleteCard = 0;
 	int m_SoundStart = 0;
@@ -34,9 +34,9 @@ class ScnMgr
 
 	int m_attackcard = 0;
 	int killscore = 0;
-	
 
 	bool isUIScene = true;
+	bool isHit = false;
 	
 	//level
 	int current_level = 0;
@@ -51,7 +51,7 @@ public:
 
 	void UIScene();
 
-	void RenderScene();
+	void RenderScene(float eTime);
 
 	void Update(float eTime);
 	

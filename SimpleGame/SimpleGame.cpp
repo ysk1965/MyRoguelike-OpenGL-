@@ -56,7 +56,7 @@ void RenderScene(void)
 	scn->ApplyForce(fx, fy, fz, eTime);
 
 	scn->Update(eTime);
-	scn->RenderScene();
+	scn->RenderScene(eTime);
 	
 	glutSwapBuffers();
 }
