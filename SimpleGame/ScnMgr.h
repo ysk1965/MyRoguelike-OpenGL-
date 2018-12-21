@@ -21,6 +21,8 @@ class ScnMgr
 	int m_SoundExplosion = 0;
 	int m_SoundHit = 0;
 	int m_SoundDeleteCard = 0;
+	int m_SoundStart = 0;
+	int m_SoundLevelup = 0;
 
 	bool bfrequency = true;
 	Object *m_Object[MAX_OBJECT] = { nullptr };
@@ -37,9 +39,12 @@ class ScnMgr
 	bool isUIScene = true;
 	
 	//level
+	int current_level = 0;
 	float level_curX = 3.f;
 	float spawnfrequency = 0.f;
 	float level_speed = 0.1f;
+	float m_playersize = 1.0f;
+	int level_frequency = 4;
 public:
 	ScnMgr();
 	~ScnMgr();

@@ -19,6 +19,8 @@ ScnMgr::ScnMgr()
 	m_SoundExplosion = m_Sound->CreateSound("./Sound/Explosion.wav");
 	m_SoundHit = m_Sound->CreateSound("./Sound/Hit.wav");
 	m_SoundDeleteCard = m_Sound->CreateSound("./Sound/DeleteCard.wav");
+	m_SoundStart = m_Sound->CreateSound("./Sound/start.wav");
+	m_SoundLevelup = m_Sound->CreateSound("./Sound/LevelUp.wav");
 
 	m_Sound->PlaySound(m_SoundBG, true, 1);
 
@@ -99,6 +101,7 @@ void ScnMgr::SceneInit()
 void ScnMgr::SceneChange()
 {
 	if (isUIScene) {
+		m_Sound->PlaySound(m_SoundStart, false, 1);
 		isUIScene = false;
 	}
 }
@@ -129,45 +132,121 @@ void ScnMgr::UIScene() {
 void ScnMgr::RenderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(killscore / 35.f, killscore / 35.f, killscore / 35.f, 1.0f);
-	if (killscore < 5) {
-		level_curX = 4.f;
-		level_speed = 50.0f;
-	}
-	else if (killscore < 10) {
-		level_curX = 6.f;
-		level_speed = 60.f;
-	}
-	else if (killscore < 15) {
-		level_curX = 8.f;
-		level_speed = 70.f;
-	}
-	else if (killscore < 20) {
-		level_curX = 10.f;
-		level_speed = 80.f;
-	}
-	else if (killscore < 25) {
-		level_curX = 12.f;
-		level_speed = 90.f;
-	}
-	else if (killscore < 30) {
-		level_curX = 13.f;
-		level_speed = 100.f;
-	}
-	else if (killscore < 35) {
-		level_curX = 14.f;
-		level_speed = 110.f;
-	}
-	else if (killscore < 40) {
-		level_curX = 14.f;
-		level_speed = 120.f;
-	}
-
+	glClearColor(killscore / 45.f, killscore / 45.f, killscore / 45.f, 1.0f);
 
 	if (isUIScene) {
 		SceneInit();
 	}
 	else {
+		if (killscore < 5) {
+			if (current_level == 0) {
+				level_curX = 4.f;
+				level_speed = 100.0f;
+				level_frequency = 4;
+				m_Object[HERO_ID]->set_w(0.4f);
+				m_Object[HERO_ID]->set_h(0.4f);
+				m_playersize = 2.f;
+				current_level = 1;
+				m_Sound->PlaySound(m_SoundLevelup, false, 1);
+			}
+		}
+		else if (killscore < 10) {
+			if (current_level == 1) {
+				level_curX = 6.f;
+				level_speed = 140.f;
+				level_frequency = 4;
+				m_Object[HERO_ID]->set_w(0.5f);
+				m_Object[HERO_ID]->set_h(0.5f);
+				m_playersize = 3.f;
+				current_level = 2;
+				m_Sound->PlaySound(m_SoundLevelup, false, 1);
+			}
+		}
+		else if (killscore < 15) {
+			if (current_level == 2) {
+				level_curX = 8.f;
+				level_speed = 180.f;
+				level_frequency = 3;
+				m_Object[HERO_ID]->set_w(0.6f);
+				m_Object[HERO_ID]->set_h(0.6f);
+				m_playersize = 4.f;
+				current_level = 3;
+				m_Sound->PlaySound(m_SoundLevelup, false, 1);
+			}
+		}
+		else if (killscore < 20) {
+			if (current_level == 3) {
+				level_curX = 10.f;
+				level_speed = 220.f;
+				level_frequency = 3;
+				m_Object[HERO_ID]->set_w(0.7f);
+				m_Object[HERO_ID]->set_h(0.7f);
+				m_playersize = 5.f;
+				current_level = 4;
+				m_Sound->PlaySound(m_SoundLevelup, false, 1);
+			}
+		}
+		else if (killscore < 25) {
+			if (current_level == 4) {
+				level_curX = 12.f;
+				level_speed = 260.f;
+				level_frequency = 3;
+				m_Object[HERO_ID]->set_w(0.8f);
+				m_Object[HERO_ID]->set_h(0.8f);
+				m_playersize = 6.f;
+				current_level = 5;
+				m_Sound->PlaySound(m_SoundLevelup, false, 1);
+			}
+		}
+		else if (killscore < 30) {
+			if (current_level == 5) {
+				level_curX = 13.f;
+				level_speed = 300.f;
+				level_frequency = 2;
+				m_Object[HERO_ID]->set_w(0.9f);
+				m_Object[HERO_ID]->set_h(0.9f);
+				m_playersize = 7.f;
+				current_level = 6;
+				m_Sound->PlaySound(m_SoundLevelup, false, 1);
+			}
+		}
+		else if (killscore < 35) {
+			if (current_level == 6) {
+				level_curX = 14.f;
+				level_speed = 340.f;
+				level_frequency = 2;
+				m_Object[HERO_ID]->set_w(1.0f);
+				m_Object[HERO_ID]->set_h(1.0f);
+				m_playersize = 8.f;
+				current_level = 7;
+				m_Sound->PlaySound(m_SoundLevelup, false, 1);
+			}
+		}
+		else if (killscore < 40) {
+			if (current_level == 7) {
+				level_curX = 14.f;
+				level_speed = 380.f;
+				level_frequency = 2;
+				m_Object[HERO_ID]->set_w(1.1f);
+				m_Object[HERO_ID]->set_h(1.1f);
+				m_playersize = 9.f;
+				current_level = 8;
+				m_Sound->PlaySound(m_SoundLevelup, false, 1);
+			}
+		}
+		else if (killscore < 45) {
+			if (current_level == 8) {
+				level_curX = 14.f;
+				level_speed = 420.f;
+				level_frequency = 1;
+				m_Object[HERO_ID]->set_w(1.1f);
+				m_Object[HERO_ID]->set_h(1.1f);
+				m_playersize = 10.f;
+				current_level = 9;
+				m_Sound->PlaySound(m_SoundLevelup, false, 1);
+			}
+		}
+
 		UIScene();
 		// Renderer Test
 
@@ -187,8 +266,8 @@ void ScnMgr::RenderScene()
 		newX = x * 100;
 		newY = y * 100;
 		newZ = z * 1;
-		newW = w * 300;
-		newH = h * 300;
+		newW = w * 50 + 25 * m_playersize;
+		newH = h * 50 + 25 * m_playersize;
 		m_Renderer->SetCameraCenterPos(newX, newY);
 
 		//m_Renderer->DrawTextureRectHeight(newX, newY, 0, newW, newH, r, g, b, a, m_texIssac, newZ);
@@ -216,7 +295,7 @@ void ScnMgr::RenderScene()
 				newH = h * 100;
 
 				if (kind == KIND_CARD) {
-					m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW + (1.8 * tx), newH + (1.8 * tx), r, g, b, a, m_texCard, tx, ty, 14.0f, 5.0f);
+					m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW + (3.f * tx), newH + (3.f * tx), r, g, b, a, m_texCard, tx, ty, 14.0f, 5.0f);
 				}
 				else if (kind == KIND_BUILDING) {
 					m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, r, g, b, a);
@@ -245,7 +324,7 @@ void ScnMgr::CardSpawn() {
 			x = rand() % 960 * 0.01f - 4.80f;
 			y = rand() % 540 * 0.01f - 2.70f;
 			z = 0;
-			if (sqrt((hx - x)*(hx - x) + (hy - y) * (hy - y)) > 1) {
+			if (sqrt((hx - x)*(hx - x) + (hy - y) * (hy - y)) > 1 + current_level * 0.05f) {
 				break;
 			}
 		}
@@ -265,7 +344,7 @@ void ScnMgr::Update(float eTime)
 	
 	if (spawnfrequency > 1.f && bfrequency == true) { // 1이 빈도 수 조절
 		spawn_cnt++;
-		if (spawn_cnt % 3 == 0) {
+		if (spawn_cnt % level_frequency == 0) {
 			CardSpawn();
 		}
 		bfrequency = false;
@@ -297,9 +376,12 @@ void ScnMgr::Update(float eTime)
 				m_Object[i]->get_acc(&object_vx, &object_vy, &object_vz);
 				m_Object[i]->get_pos(&object_px, &object_py, &object_pz);
 
-				m_Object[i]->set_vx(object_vx + (hero_px - object_px) * eTime * level_speed);
-				m_Object[i]->set_vy(object_vy + (hero_py - object_py) * eTime * level_speed);
-				m_Object[i]->set_vz(object_vz + (hero_pz - object_pz) * eTime * level_speed);
+				float vector_norm = sqrt((hero_px - object_px)*(hero_px - object_px) +
+					(hero_py - object_py)*(hero_py - object_py) + (hero_pz - object_pz)*(hero_pz - object_pz));
+
+				m_Object[i]->set_vx((hero_px - object_px) / vector_norm * eTime * level_speed);
+				m_Object[i]->set_vy((hero_py - object_py) / vector_norm * eTime * level_speed);
+				m_Object[i]->set_vz((hero_pz - object_pz) / vector_norm * eTime * level_speed);
 
 				//m_Object[i]->set_ax((hero_px - object_px) * eTime * level_speed);
 				//m_Object[i]->set_ay((hero_py - object_py) * eTime * level_speed);
@@ -550,9 +632,9 @@ void ScnMgr::UpdateCollision()
 	int kind_J, kind_I;
 	int health_J, health_I;
 
-	for (int i = HERO_ID + 1; i < MAX_OBJECT; i++)
+	for (int i = HERO_ID; i < MAX_OBJECT; i++)
 	{
-		for(int j = i + 1; j<MAX_OBJECT; j++)
+		for(int j = i; j<MAX_OBJECT; j++)
 		{
 			if (m_Object[i]!=nullptr && m_Object[j] != nullptr)
 			{
@@ -575,17 +657,34 @@ void ScnMgr::UpdateCollision()
 				{
 					float tx, ty;
 
+					// Player Damege
+					if (kind_J == KIND_HERO) {
+						m_Object[j]->set_health(--health_J);
+						if (kind_I == KIND_CARD) {
+							m_Object[i]->set_health(0);
+							cout << "Collision" << endl;
+						}
+					}
+					else if (kind_I == KIND_HERO) {
+						m_Object[i]->set_health(--health_I);
+						if (kind_J == KIND_CARD) {
+							m_Object[j]->set_health(0);
+							cout << "Collision" << endl;
+						}
+					}
+
 					// Bullet 은 i이던 j이던 health가 깍여야 함.
 					if (kind_I == KIND_BULLET) {
-						m_Object[i]->set_health(--health_I); // bullet
+						if (kind_J == KIND_HERO) continue;
 
 						if (kind_J == KIND_BUILDING) {
-							//cout << "Building Check" << endl;
+							m_Object[i]->set_health(--health_I); // bullet
 							m_Object[j]->set_r(0.01*(rand() % 100));
 							m_Object[j]->set_g(0.01*(rand() % 100));
 							m_Object[j]->set_b(0.01*(rand() % 100));
 						}
 						else if (kind_J == KIND_CARD) {
+							m_Object[i]->set_health(--health_I); // bullet
 							m_Object[j]->get_tex(&tx, &ty);
 
 							if (ty != m_attackcard) break;
@@ -596,16 +695,18 @@ void ScnMgr::UpdateCollision()
 							cout << "health : " << health_J << endl;
 						}
 					}
-					else if (kind_J == KIND_BULLET) {
-						m_Object[j]->set_health(--health_J); // bullet
+					if (kind_J == KIND_BULLET) {
+						if (kind_I == KIND_HERO) continue;
 
 						if (kind_I == KIND_BUILDING) {
+							m_Object[j]->set_health(--health_J); // bullet
 							//cout << "Building Check" << endl;
 							m_Object[i]->set_r(0.01*(rand() % 100));
 							m_Object[i]->set_g(0.01*(rand() % 100));
 							m_Object[i]->set_b(0.01*(rand() % 100));
 						}
 						else if (kind_I == KIND_CARD) {
+							m_Object[j]->set_health(--health_J); // bullet
 							m_Object[i]->get_tex(&tx, &ty);
 
 							if (ty != m_attackcard) break;
