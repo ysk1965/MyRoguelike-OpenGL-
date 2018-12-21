@@ -41,6 +41,7 @@ ScnMgr::ScnMgr()
 	m_Object[HERO_ID]->set_kind(KIND_HERO);
 
 	m_mainUI = m_Renderer->CreatePngTexture("MainUI.png");
+	m_clearUI = m_Renderer->CreatePngTexture("ClearUI.png");
 	m_texExplosion = m_Renderer->CreatePngTexture("explosion.png");
 	m_texMonster = m_Renderer->CreatePngTexture("monster.png");
 	m_texCard = m_Renderer->CreatePngTexture("card.png");
@@ -87,16 +88,25 @@ void ScnMgr::SceneInit()
 		if (m_Object[i] != nullptr)
 		{
 			m_Object[i]->get_kind(&kind);
-			if (kind == KIND_CARD || kind == KIND_BULLET) {
+			if (kind == KIND_CARD || kind == KIND_BULLET || kind == KIND_EVENTCARD) {
 				delete m_Object[i];
 				m_Object[i] = nullptr;
 			}
 		}
-		m_Renderer->DrawTextureRectSeqXY(0, 0, 0.f,
-			RENDERER_W, RENDERER_H,
-			1.f, 1.f, 1.f, 1.f
-			, m_mainUI, 0, 0, 1.f, 1.f); // 우하단
-		m_Renderer->SetCameraCenterPos(0, 0);
+		if (isClearScene == true) {
+			m_Renderer->DrawTextureRectSeqXY(0, 0, 0.f,
+				RENDERER_W, RENDERER_H,
+				1.f, 1.f, 1.f, 1.f
+				, m_clearUI, 0, 0, 1.f, 1.f); // 우하단
+			m_Renderer->SetCameraCenterPos(0, 0);
+		}
+		else {
+			m_Renderer->DrawTextureRectSeqXY(0, 0, 0.f,
+				RENDERER_W, RENDERER_H,
+				1.f, 1.f, 1.f, 1.f
+				, m_mainUI, 0, 0, 1.f, 1.f); // 우하단
+			m_Renderer->SetCameraCenterPos(0, 0);
+		}
 	}
 }
 
@@ -105,6 +115,7 @@ void ScnMgr::SceneChange()
 	if (isUIScene) {
 		m_Sound->PlaySound(m_SoundStart, false, 1);
 		isUIScene = false;
+		isClearScene = false;
 		m_Object[HERO_ID]->set_health(3);
 	}
 }
@@ -154,19 +165,38 @@ void ScnMgr::UIScene() {
 			1.f, 1.f, 1.f, 1.f
 			, m_texCard, m_curX, m_attackcard, 14.0f, 5.0f); // 우상단
 	}
-
+	int health;
+	m_Object[HERO_ID]->get_health(&health);
+	if (health == 1) {
+		m_Renderer->DrawTextureRectSeqXY(0, 0, 1.f,
+			130.f, 130.f,
+			1.f, 1.f, 1.f, 1.f
+			, m_texCard, 12, m_attackcard, 14.0f, 5.0f); // 우하단
+	}
+	else {
+		m_Renderer->DrawTextureRectSeqXY(0, 0, 1.f,
+			130.f, 130.f,
+			1.f, 1.f, 1.f, 1.f
+			, m_texCard, health - 2, m_attackcard, 14.0f, 5.0f); // 우하단
+	}
 }
 
 void ScnMgr::RenderScene(float eTime)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(1 - killscore / 45.f + event_time / 10, 1 - killscore / 45.f + event_time / 10, 1 - killscore / 45.f, 1.0f - event_time / 10);
+	float r = 1 - killscore / 45.f + event_time / 10;
+	float g = 1 - killscore / 45.f + event_time / 10;
+	float b = 1 - killscore / 45.f - event_time / 10;
+
+	glClearColor(r, g, b, 1);
 
 	if (isUIScene) {
 		SceneInit();
 	}
 	else {
-		if (killscore < 5) {
+		UIScene();
+
+		if (killscore < 4) {
 			if (current_level == 0) {
 				level_curX = 4.f;
 				level_speed = 90.0f;
@@ -178,7 +208,7 @@ void ScnMgr::RenderScene(float eTime)
 				m_Sound->PlaySound(m_SoundLevelup, false, 1);
 			}
 		}
-		else if (killscore < 10) {
+		else if (killscore < 8) {
 			if (current_level == 1) {
 				level_curX = 6.f;
 				level_speed = 140.f;
@@ -190,7 +220,7 @@ void ScnMgr::RenderScene(float eTime)
 				m_Sound->PlaySound(m_SoundLevelup, false, 1);
 			}
 		}
-		else if (killscore < 15) {
+		else if (killscore < 12) {
 			if (current_level == 2) {
 				level_curX = 8.f;
 				level_speed = 190.f;
@@ -202,7 +232,7 @@ void ScnMgr::RenderScene(float eTime)
 				m_Sound->PlaySound(m_SoundLevelup, false, 1);
 			}
 		}
-		else if (killscore < 20) {
+		else if (killscore < 17) {
 			if (current_level == 3) {
 				level_curX = 10.f;
 				level_speed = 240.f;
@@ -214,7 +244,7 @@ void ScnMgr::RenderScene(float eTime)
 				m_Sound->PlaySound(m_SoundLevelup, false, 1);
 			}
 		}
-		else if (killscore < 25) {
+		else if (killscore < 22) {
 			if (current_level == 4) {
 				level_curX = 12.f;
 				level_speed = 290.f;
@@ -226,7 +256,7 @@ void ScnMgr::RenderScene(float eTime)
 				m_Sound->PlaySound(m_SoundLevelup, false, 1);
 			}
 		}
-		else if (killscore < 30) {
+		else if (killscore < 27) {
 			if (current_level == 5) {
 				level_curX = 13.f;
 				level_speed = 340.f;
@@ -250,7 +280,7 @@ void ScnMgr::RenderScene(float eTime)
 				m_Sound->PlaySound(m_SoundLevelup, false, 1);
 			}
 		}
-		else if (killscore < 40) {
+		else if (killscore < 43) {
 			if (current_level == 7) {
 				level_curX = 14.f;
 				level_speed = 440.f;
@@ -262,20 +292,11 @@ void ScnMgr::RenderScene(float eTime)
 				m_Sound->PlaySound(m_SoundLevelup, false, 1);
 			}
 		}
-		else if (killscore < 45) {
-			if (current_level == 8) {
-				level_curX = 14.f;
-				level_speed = 490.f;
-				level_frequency = 1;
-				m_Object[HERO_ID]->set_w(1.1f);
-				m_Object[HERO_ID]->set_h(1.1f);
-				m_playersize = 10.f;
-				current_level = 9;
-				m_Sound->PlaySound(m_SoundLevelup, false, 1);
-			}
+		if (killscore > 43) {
+			SceneInit();
+			isClearScene = true;
 		}
 
-		UIScene();
 		// Renderer Test
 
 		float x, y, z;
@@ -318,7 +339,12 @@ void ScnMgr::RenderScene(float eTime)
 
 		//m_Renderer->DrawTextureRectHeight(newX, newY, 0, newW, newH, r, g, b, a, m_texIssac, newZ);
 		m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texMonster, m_curX, 0, 5.0f, 5.0f);
-
+		m_Renderer->DrawSolidRectGauge(
+			newX, newY + newH, 0,
+			newW, 3,
+			1, 1, 1, 1,
+			newZ,
+			0.5f);
 		//m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW/2, newH/2, r, g, b, a, m_texExplosion, m_curX, m_curY, 9.0f, 9.0f);
 
 		for (int i = 0; i < MAX_OBJECT; i++)
@@ -348,7 +374,7 @@ void ScnMgr::RenderScene(float eTime)
 				else if (kind == KIND_BULLET) {
 					if (isEvent) {
 						if (event_time < 10) {
-							event_time += eTime;
+							event_time += eTime /3;
 						}
 						else {
 							event_time = 0;
@@ -384,7 +410,7 @@ void ScnMgr::CardSpawn() {
 			x = rand() % 960 * 0.01f - 4.80f;
 			y = rand() % 540 * 0.01f - 2.70f;
 			z = 0;
-			if (sqrt((hx - x)*(hx - x) + (hy - y) * (hy - y)) > 1 + current_level * 0.8f) {
+			if (sqrt((hx - x)*(hx - x) + (hy - y) * (hy - y)) > 1 + current_level * 0.5f) {
 				break;
 			}
 		}
@@ -436,7 +462,7 @@ void ScnMgr::Update(float eTime)
 	}
 
 	if (spawnfrequency < -1.f && bfrequency == false) {
-		if (spawn_cnt % 12 == 0) {
+		if (spawn_cnt % 20 == 0) {
 			EventCardSpawn();
 		}
 		//CardSpawn();
@@ -519,7 +545,7 @@ void ScnMgr::Shoot(int direct)
 		float x, y, z;
 		float vx, vy, vz;
 		float bvX = 0.f, bvY = 0.f;
-		float amount = 5.f;
+		float amount = 6.f;
 
 		if (direct == SHOOT_UP)
 			bvY += amount;
@@ -533,8 +559,8 @@ void ScnMgr::Shoot(int direct)
 		m_Object[HERO_ID]->get_pos(&x, &y, &z);
 		m_Object[HERO_ID]->get_vel(&vx, &vy, &vz);
 
-		bvX += vx;
-		bvY += vy;
+		//bvX += vx;
+		//bvY += vy;
 
 		AddObject(x, y, z, bvX, bvY, 0.3f, 0.3f, KIND_BULLET, 1, STATE_GROUND);
 		m_Sound->PlaySound(m_SoundFire, false, 1);

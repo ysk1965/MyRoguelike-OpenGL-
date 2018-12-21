@@ -14,6 +14,7 @@ class ScnMgr
 	GLuint m_texExplosion;
 	GLuint m_texMonster;
 	GLuint m_texCard;
+	GLuint m_clearUI;
 
 	Sound *m_Sound = NULL;
 	int m_SoundBG = 0;
@@ -41,6 +42,7 @@ class ScnMgr
 	float event_time = 0.f;
 
 	bool isUIScene = true;
+	bool isClearScene = false;
 	bool isHit = false;
 	bool isEvent = false;
 	
