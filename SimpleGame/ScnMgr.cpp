@@ -51,11 +51,22 @@ ScnMgr::ScnMgr()
 	// Add Building
 	for (int i = -1; i < 26; i++) {
 		for (int j = -1; j < 16; j++) {
-			if (i == -1 || i == 25) {
+			if (i == -1 || i == 25 ) {
 				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f, 0.f, 0.f, 0.f, 0.5f, 0.5f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
 			}
-			if (j == -1 || j == 15) {
+			if (j == -1 || j == 15 ) {
 				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f, 0.f, 0.f, 0.f, 0.5f, 0.5f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
+			}
+		}
+	}
+
+	for (int i = 10; i < 15; i++) {
+		for (int j = 5; j < 10; j++) {
+			if (i == 10 || i == 14) {
+				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f, 0.f, 0.f, 0.f, 0.25f, 0.25f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
+			}
+			if (j == 5 || j == 9) {
+				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f, 0.f, 0.f, 0.f, 0.25f, 0.25f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
 			}
 		}
 	}
@@ -81,7 +92,14 @@ void ScnMgr::SceneInit()
 	isUIScene = true;
 	int kind;
 	killscore = 0;
+	current_level = 0;
+	level_curX = 3.f;
+	spawnfrequency = 0.f;
+	level_speed = 0.1f;
+	m_playersize = 2.0f;
+	level_frequency = 4;
 	m_Object[HERO_ID]->set(0.f, 0.f, 0.5f, 0.5f, 1.f, 1.f, 1.f, 1.f);
+	m_Object[HERO_ID]->set_health(3);
 
 	for (int i = 0; i < MAX_OBJECT; i++) {
 		//if (m_Object[HERO_ID]) continue;
