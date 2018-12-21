@@ -37,7 +37,7 @@ ScnMgr::ScnMgr()
 	m_Object[HERO_ID]->set_ay(0.f);
 	m_Object[HERO_ID]->set_az(0.f);
 	m_Object[HERO_ID]->set_mass(1.f);
-	m_Object[HERO_ID]->set_health(3);
+	m_Object[HERO_ID]->set_health(5);
 	m_Object[HERO_ID]->set_kind(KIND_HERO);
 
 	m_mainUI = m_Renderer->CreatePngTexture("MainUI.png");
@@ -63,10 +63,12 @@ ScnMgr::ScnMgr()
 	for (int i = 10; i < 15; i++) {
 		for (int j = 5; j < 10; j++) {
 			if (i == 10 || i == 14) {
-				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f, 0.f, 0.f, 0.f, 0.25f, 0.25f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
+				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f,
+					0.f, 0.f, 0.f, 0.25f, 0.25f, KIND_UI, 10, STATE_GROUND); // 수정필요
 			}
 			if (j == 5 || j == 9) {
-				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f, 0.f, 0.f, 0.f, 0.25f, 0.25f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
+				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f,
+					0.f, 0.f, 0.f, 0.25f, 0.25f, KIND_UI, 10, STATE_GROUND); // 수정필요
 			}
 		}
 	}
@@ -99,7 +101,7 @@ void ScnMgr::SceneInit()
 	m_playersize = 2.0f;
 	level_frequency = 4;
 	m_Object[HERO_ID]->set(0.f, 0.f, 0.5f, 0.5f, 1.f, 1.f, 1.f, 1.f);
-	m_Object[HERO_ID]->set_health(3);
+	m_Object[HERO_ID]->set_health(5);
 
 	for (int i = 0; i < MAX_OBJECT; i++) {
 		//if (m_Object[HERO_ID]) continue;
@@ -134,7 +136,7 @@ void ScnMgr::SceneChange()
 		m_Sound->PlaySound(m_SoundStart, false, 1);
 		isUIScene = false;
 		isClearScene = false;
-		m_Object[HERO_ID]->set_health(3);
+		m_Object[HERO_ID]->set_health(5);
 	}
 }
 
@@ -357,12 +359,6 @@ void ScnMgr::RenderScene(float eTime)
 
 		//m_Renderer->DrawTextureRectHeight(newX, newY, 0, newW, newH, r, g, b, a, m_texIssac, newZ);
 		m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texMonster, m_curX, 0, 5.0f, 5.0f);
-		m_Renderer->DrawSolidRectGauge(
-			newX, newY + newH, 0,
-			newW, 3,
-			1, 1, 1, 1,
-			newZ,
-			0.5f);
 		//m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW/2, newH/2, r, g, b, a, m_texExplosion, m_curX, m_curY, 9.0f, 9.0f);
 
 		for (int i = 0; i < MAX_OBJECT; i++)
@@ -406,6 +402,9 @@ void ScnMgr::RenderScene(float eTime)
 				}
 				else if (kind == KIND_EVENTCARD) {
 					m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, 0, 4, 14.0f, 5.0f);
+				}
+				else if (kind == KIND_UI) {
+					m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, 0.5 + rand()%5 * 0.1f, 0.5 + rand() % 5 * 0.1f, 0.5 + rand() % 5 * 0.1f, a);
 				}
 			}
 		}
