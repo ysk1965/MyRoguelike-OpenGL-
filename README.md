@@ -1,5 +1,5 @@
 # Card Capture
-- Flatform : PC
+- Platform : PC
 - Tool & Language : C++, OpenGL
 - 조작키
   - 이동 : w, a, s, d
