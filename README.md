@@ -1,5 +1,5 @@
 # Card Capture
-![TitleImg](.MainImage.png)
+![TitleImg](./MainImage.png)
 - Platform : PC
 - Tool & Language : C++, OpenGL
 - 조작키
