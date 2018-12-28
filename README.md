@@ -2,6 +2,7 @@
 ![TitleImg](./MainImage.png)
 - Platform : PC
 - Tool & Language : C++, OpenGL
+- Collaborators : 1인 개발
 - 조작키
   - 이동 : w, a, s, d
   - 공격키 : 방향 화살표
@@ -14,8 +15,8 @@
    - 주기적으로 이벤트카드가 스폰 되는데 이를 획득하면 이벤트가 발생하여 카드를 변경하지 않더라도 스폰 된 카드를 제거할 수 있습니다.
    - 가운데 있는 트럼프 카드의 수는 현재 플레이어의 체력입니다.
 - 개발목적
-  - OpenGL을 이용한 쉐이더 그래픽스 공부
-  - 마찰력, 속도, 가속도, 힘 등 2D 상황에서 물리작용 공부
+  - OpenGL을 이용한 그래픽스 공부 및 Shader 적용
+  - 마찰력, 속도, 가속도, 힘 등 2D 상황의 물리작용 공부
   - sprite 이미지, shadow 등 텍스쳐 적용
-  - frame 단위로 진행되는 게임 프레임워크 구현 (Scene, UserControl, Time)
+  - frame 단위로 진행되는 게임 프레임워크 구현 (Scene, UserControl, Time ...)
   - 프레임워크 위에 기본적인 게임 구현
