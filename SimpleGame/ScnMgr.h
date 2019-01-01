@@ -74,6 +74,7 @@ public:
 	void SpaceBarChange();
 
 	void AddObject(float x, float y, float z, float vx, float vy, float m_width, float m_height, int m_kind, int health, int state);
+	void Particle(float x, float y, float z, float m_width, float m_height, int m_kind, int health, int state);
 	void DeleteObject(int id);
 
 	void DoGarbageCollect();

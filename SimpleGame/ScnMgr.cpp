@@ -406,6 +406,10 @@ void ScnMgr::RenderScene(float eTime)
 				else if (kind == KIND_UI) {
 					m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, 0.5 + rand()%5 * 0.1f, 0.5 + rand() % 5 * 0.1f, 0.5 + rand() % 5 * 0.1f, a);
 				}
+				else if (kind == KIND_PARTICLE) {
+					cout << "particle" << endl;
+					m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, 0.5 + rand() % 5 * 0.1f, 0.5 + rand() % 5 * 0.1f, 0.5 + rand() % 5 * 0.1f, a);
+				}
 			}
 		}
 	}
@@ -664,7 +668,29 @@ void ScnMgr::AddObject(float x, float y, float z, float vx, float vy, float m_wi
 			m_Object[index]->set_health(health);
 		}
 	}
+}
 
+void ScnMgr::Particle(float x, float y, float z, float m_width, float m_height, int m_kind, int health, int state)
+{
+	float tx, ty;
+	float amount = 5.0f;
+
+	for (int i = 0; i < PARTICLE_CNT; i++) {
+		int index = FindEmptySlot();
+		if (index != -1)
+		{
+			cout << i << endl;
+			m_Object[index] = new Object();
+			m_Object[index]->set(x, y, m_width, m_height, 0.01*(rand() % 100), 0.01*(rand() % 100), 0.01*(rand() % 100), 1.f);
+			m_Object[index]->set_z(z);
+			m_Object[index]->set_vx((1 - rand()%20 * 0.1f) * amount);
+			m_Object[index]->set_vy((1 - rand()%20 * 0.1f) * amount);
+			m_Object[index]->set_ax(0);
+			m_Object[index]->set_ay(0);
+			m_Object[index]->set_kind(m_kind);
+			m_Object[index]->set_state(state);
+		}
+	}
 }
 
 void ScnMgr::DeleteObject(int id)
@@ -697,11 +723,20 @@ void ScnMgr::DoGarbageCollect()
 			continue;
 		}
 
+		// Check Velocity in Particle
+		if (vel < FLT_EPSILON && m_kind == KIND_PARTICLE) {
+			cout << "Check Velocity - " << i << endl;
+			DeleteObject(i);
+			cout << "particle : " << i<< endl;
+			continue;
+		}
+
 		// Check Health
 		if (health <= 0 && (m_kind == KIND_BULLET || m_kind == KIND_BUILDING || m_kind == KIND_CARD || m_kind == KIND_EVENTCARD)) {
 			cout << "Check Health - " << i << "[" << health << "]" <<endl;
 			if (m_kind == KIND_CARD) {
 				killscore++;
+				Particle(px, py, pz, 0.2f, 0.2f, KIND_PARTICLE, 1, STATE_GROUND);
 			}
 			DeleteObject(i);
 			continue;
