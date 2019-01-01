@@ -16,7 +16,7 @@
 #define KIND_CARD 3
 #define KIND_EVENTCARD 4
 #define KIND_UI 5
-#define KIND_PARTICLE 5
+#define KIND_PARTICLE 6
 
 #define CARD_SPADE 2
 #define CARD_DIAMOND 1
@@ -29,7 +29,7 @@
 
 #define GRAVITY 9.8
 
-#define PARTICLE_CNT 30
+#define PARTICLE_CNT 40
 
 #define RENDERER_W 1440
 #define RENDERER_H 860

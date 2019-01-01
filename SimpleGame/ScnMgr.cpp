@@ -52,10 +52,10 @@ ScnMgr::ScnMgr()
 	for (int i = -1; i < 26; i++) {
 		for (int j = -1; j < 16; j++) {
 			if (i == -1 || i == 25 ) {
-				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f, 0.f, 0.f, 0.f, 0.5f, 0.5f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
+				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f, 0.f, 0.f, 0.f, 0.5f, 0.5f, KIND_BUILDING, 10, STATE_GROUND);
 			}
 			if (j == -1 || j == 15 ) {
-				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f, 0.f, 0.f, 0.f, 0.5f, 0.5f, KIND_BUILDING, 10, STATE_GROUND); // 수정필요
+				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f, 0.f, 0.f, 0.f, 0.5f, 0.5f, KIND_BUILDING, 10, STATE_GROUND);
 			}
 		}
 	}
@@ -64,15 +64,14 @@ ScnMgr::ScnMgr()
 		for (int j = 5; j < 10; j++) {
 			if (i == 10 || i == 14) {
 				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f,
-					0.f, 0.f, 0.f, 0.25f, 0.25f, KIND_UI, 10, STATE_GROUND); // 수정필요
+					0.f, 0.f, 0.f, 0.25f, 0.25f, KIND_UI, 10, STATE_GROUND);
 			}
 			if (j == 5 || j == 9) {
 				AddObject(RENDERER_W / -200.f + 0.595f * i + 0.1f, RENDERER_H / 200.f + 0.59f * -j - 0.2f,
-					0.f, 0.f, 0.f, 0.25f, 0.25f, KIND_UI, 10, STATE_GROUND); // 수정필요
+					0.f, 0.f, 0.f, 0.25f, 0.25f, KIND_UI, 10, STATE_GROUND);
 			}
 		}
 	}
-	//AddObject(4.8f, 2.7f, 0.f, 0.f, 0.f, 1.0f, 1.0f, KIND_UI, 10, STATE_GROUND); // 수정필요
 }
 
 
@@ -361,6 +360,7 @@ void ScnMgr::RenderScene(float eTime)
 		m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texMonster, m_curX, 0, 5.0f, 5.0f);
 		//m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW/2, newH/2, r, g, b, a, m_texExplosion, m_curX, m_curY, 9.0f, 9.0f);
 
+		static int temp = 0;
 		for (int i = 0; i < MAX_OBJECT; i++)
 		{
 			if (i == HERO_ID);
@@ -378,12 +378,18 @@ void ScnMgr::RenderScene(float eTime)
 
 				newW = w * 100;
 				newH = h * 100;
+				float randomValue = 0.5 + rand() % 5 * 0.1f;
 
 				if (kind == KIND_CARD) {
 					m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW + (3.f * tx), newH + (3.f * tx), r, g, b, a, m_texCard, tx, ty, 14.0f, 5.0f);
 				}
 				else if (kind == KIND_BUILDING) {
-					m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, r, g, b, a);
+					if (isEvent) {
+						m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, 0.5 + rand() % 5 * 0.1f, 0.5 + rand() % 5 * 0.1f, 0.5 + rand() % 5 * 0.1f, a);
+					}
+					else {
+						m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, r, g, b, a);
+					}
 				}
 				else if (kind == KIND_BULLET) {
 					if (isEvent) {
@@ -404,10 +410,14 @@ void ScnMgr::RenderScene(float eTime)
 					m_Renderer->DrawTextureRectSeqXY(newX, newY, 0, newW, newH, r, g, b, a, m_texCard, 0, 4, 14.0f, 5.0f);
 				}
 				else if (kind == KIND_UI) {
-					m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, 0.5 + rand()%5 * 0.1f, 0.5 + rand() % 5 * 0.1f, 0.5 + rand() % 5 * 0.1f, a);
+					if (isEvent) {
+						m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, 0.5 + rand() % 5 * 0.1f, 0.5 + rand() % 5 * 0.1f, 0.5 + rand() % 5 * 0.1f, a);
+					}
+					else {
+						m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, randomValue, randomValue, randomValue, a);
+					}
 				}
 				else if (kind == KIND_PARTICLE) {
-					cout << "particle" << endl;
 					m_Renderer->DrawSolidRect(newX, newY, newZ, newW, newH, 0.5 + rand() % 5 * 0.1f, 0.5 + rand() % 5 * 0.1f, 0.5 + rand() % 5 * 0.1f, a);
 				}
 			}
@@ -662,7 +672,7 @@ void ScnMgr::AddObject(float x, float y, float z, float vx, float vy, float m_wi
 		if (m_kind == KIND_CARD) {
 			m_Object[index]->set_health(tx + 1);
 			m_Object[index]->get_health(&health);
-			cout << "new Health : " << health << endl;
+			//cout << "new Health : " << health << endl;
 		}
 		else {
 			m_Object[index]->set_health(health);
@@ -679,7 +689,6 @@ void ScnMgr::Particle(float x, float y, float z, float m_width, float m_height, 
 		int index = FindEmptySlot();
 		if (index != -1)
 		{
-			cout << i << endl;
 			m_Object[index] = new Object();
 			m_Object[index]->set(x, y, m_width, m_height, 0.01*(rand() % 100), 0.01*(rand() % 100), 0.01*(rand() % 100), 1.f);
 			m_Object[index]->set_z(z);
@@ -725,9 +734,8 @@ void ScnMgr::DoGarbageCollect()
 
 		// Check Velocity in Particle
 		if (vel < FLT_EPSILON && m_kind == KIND_PARTICLE) {
-			cout << "Check Velocity - " << i << endl;
+			//cout << "Check Velocity - " << i << endl;
 			DeleteObject(i);
-			cout << "particle : " << i<< endl;
 			continue;
 		}
 
@@ -736,7 +744,7 @@ void ScnMgr::DoGarbageCollect()
 			cout << "Check Health - " << i << "[" << health << "]" <<endl;
 			if (m_kind == KIND_CARD) {
 				killscore++;
-				Particle(px, py, pz, 0.2f, 0.2f, KIND_PARTICLE, 1, STATE_GROUND);
+				Particle(px, py, pz, 0.13f + 0.004f * killscore, 0.13f + 0.004f * killscore, KIND_PARTICLE, 1, STATE_GROUND);
 			}
 			DeleteObject(i);
 			continue;
@@ -830,7 +838,6 @@ void ScnMgr::UpdateCollision()
 							m_Sound->PlaySound(m_SoundHplose, false, 1);
 							m_Object[i]->set_health(0);
 							isHit = true;
-							cout << health_J << endl;
 							if (health_J == 0) {
 								m_Sound->PlaySound(m_SoundDie, false, 1);
 								SceneInit();
@@ -848,7 +855,6 @@ void ScnMgr::UpdateCollision()
 							m_Sound->PlaySound(m_SoundHplose, false, 1);
 							m_Object[j]->set_health(0);
 							isHit = true;
-							cout << health_I << endl;
 							if (health_I == 0) {
 								m_Sound->PlaySound(m_SoundDie, false, 1);
 								SceneInit();
@@ -879,7 +885,6 @@ void ScnMgr::UpdateCollision()
 								m_Object[j]->set_tex(--tx, ty);
 								m_Object[j]->set_health(--health_J);
 								m_Sound->PlaySound(m_SoundHit, false, 1);
-								cout << "health : " << health_J << endl;
 							}
 							else {
 								if (ty != m_attackcard) {
@@ -890,7 +895,6 @@ void ScnMgr::UpdateCollision()
 								m_Object[j]->set_tex(--tx, ty);
 								m_Object[j]->set_health(--health_J);
 								m_Sound->PlaySound(m_SoundHit, false, 1);
-								cout << "health : " << health_J << endl;
 							}
 						}
 					}
@@ -912,7 +916,6 @@ void ScnMgr::UpdateCollision()
 								m_Object[i]->set_tex(--tx, ty);
 								m_Object[i]->set_health(--health_I);
 								m_Sound->PlaySound(m_SoundHit, false, 1);
-								cout << "health : " << health_I << endl;
 							}
 							else {
 								if (ty != m_attackcard) {
@@ -923,7 +926,6 @@ void ScnMgr::UpdateCollision()
 								m_Object[i]->set_tex(--tx, ty);
 								m_Object[i]->set_health(--health_I);
 								m_Sound->PlaySound(m_SoundHit, false, 1);
-								cout << "health : " << health_I << endl;
 							}
 						}
 					}
