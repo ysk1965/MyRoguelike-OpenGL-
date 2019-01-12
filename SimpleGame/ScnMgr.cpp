@@ -24,6 +24,7 @@ ScnMgr::ScnMgr()
 	m_SoundLevelup = m_Sound->CreateSound("./Sound/LevelUp.wav");
 	m_SoundDie = m_Sound->CreateSound("./Sound/LevelUp.wav");
 	m_SoundItem = m_Sound->CreateSound("./Sound/Item.wav");
+	m_SoundBomb = m_Sound->CreateSound("./Sound/Bomb.wav");
 
 	m_Sound->PlaySound(m_SoundBG, true, 1);
 
@@ -700,6 +701,7 @@ void ScnMgr::Particle(float x, float y, float z, float m_width, float m_height, 
 			m_Object[index]->set_state(state);
 		}
 	}
+	m_Sound->PlaySound(m_SoundDeleteCard, false, 1);
 }
 
 void ScnMgr::DeleteObject(int id)

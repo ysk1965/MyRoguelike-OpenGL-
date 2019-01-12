@@ -27,6 +27,7 @@ class ScnMgr
 	int m_SoundHitmiss = 0;
 	int m_SoundDie = 0;
 	int m_SoundItem = 0;
+	int m_SoundBomb = 0;
 
 	bool bfrequency = true;
 	Object *m_Object[MAX_OBJECT] = { nullptr };
