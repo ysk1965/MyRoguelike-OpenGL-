@@ -3,6 +3,7 @@
 - Platform : PC
 - Tool & Language : C++, OpenGL
 - Collaborators : 1인 개발
+- [플레이 영상](https://blog.naver.com/enter_maintanance/221440673886)
 - 조작키
   - 이동 : w, a, s, d
   - 공격키 : 방향 화살표
